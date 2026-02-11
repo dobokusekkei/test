@@ -114,7 +114,7 @@ export function HelpModal({ onClose }) {
                                 
                                 <div className="math-display">
                                     <div className="mb-4">
-                                        <span className="func">M</span>(<span className="math-inline">x</span>) <span className="op">=</span> <span className="math-inline">M</span><span className="sub">0</span>(<span className="math-inline">x</span>) <span className="op">+</span> 
+                                        <span className="func">M</span>(<span className="math-inline">x</span>) <span className="op">=</span> <span className="math-inline">M</span><span className="sub">0</span>(<span className="math-inline">x</span>) <span className="op">+</span> <span className="math-inline">M</span><span className="sub">L</span> <span className="op">+</span> 
                                         <div className="fraction">
                                             <span><span className="math-inline">x</span></span>
                                             <span><span className="math-inline">L</span></span>
