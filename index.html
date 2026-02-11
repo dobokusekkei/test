@@ -62,6 +62,82 @@ const BEAM_TYPES = window.BEAM_TYPES;
 const HISTORY_DATA = window.HISTORY_DATA;
 const MANUAL_SECTIONS = window.MANUAL_SECTIONS;
 
+/**
+ * 別ウィンドウ管理用コンポーネント
+ * (React Portalを使用して新しいウィンドウにコンテンツを描画)
+ */
+function NewWindow({ children, onClose, title = "計算結果詳細" }) {
+  const newWindow = useRef(null);
+  const [container, setContainer] = useState(null);
+
+  useEffect(() => {
+    // ウィンドウを開く
+    const win = window.open("", "_blank", "width=1000,height=800,left=100,top=100");
+    if (!win) {
+      alert("ポップアップがブロックされました。許可してください。");
+      if (onClose) onClose();
+      return;
+    }
+    
+    newWindow.current = win;
+    win.document.title = title;
+
+    // 親ウィンドウのスタイルシート(CSS)をすべてコピーする
+    // (これがないと別ウィンドウが真っ白や崩れた表示になります)
+    Array.from(document.styleSheets).forEach(styleSheet => {
+      try {
+        if (styleSheet.href) {
+          const newLink = win.document.createElement('link');
+          newLink.rel = 'stylesheet';
+          newLink.href = styleSheet.href;
+          win.document.head.appendChild(newLink);
+        } else if (styleSheet.cssRules) {
+          const newStyle = win.document.createElement('style');
+          Array.from(styleSheet.cssRules).forEach(rule => {
+            newStyle.appendChild(win.document.createTextNode(rule.cssText));
+          });
+          win.document.head.appendChild(newStyle);
+        }
+      } catch (e) {
+        // CORS制限などでコピーできないスタイルは無視
+      }
+    });
+
+    // TailwindなどのCDNスクリプトもコピー
+    Array.from(document.scripts).forEach(script => {
+        if (script.src && !script.src.includes('babel')) { // Babelはコピーしない
+            const newScript = win.document.createElement('script');
+            newScript.src = script.src;
+            win.document.head.appendChild(newScript);
+        }
+    });
+
+    // コンテンツを描画するdivを作成
+    const div = win.document.createElement('div');
+    // 印刷時に余白などをリセットするクラスを付与
+    div.className = "p-4 min-h-screen bg-white";
+    win.document.body.appendChild(div);
+    win.document.body.className = "bg-slate-50"; // 背景色設定
+
+    setContainer(div);
+
+    // ウィンドウが閉じられた時の処理
+    win.onbeforeunload = () => {
+      if (onClose) onClose();
+    };
+
+    // クリーンアップ
+    return () => {
+      if (newWindow.current) {
+        newWindow.current.close();
+      }
+    };
+  }, []);
+
+  // Portalを使って新しいウィンドウのdivにchildrenを描画
+  return container ? createPortal(children, container) : null;
+}
+
 // ▲▲▲ 書き換え終了（これより下の function App() ... などは消さないで！） ▲▲▲
 
 // ... (以下、元のコードが続く) ...
