@@ -908,7 +908,11 @@ function App() {
       </div> 
 
 　　　　{showResultWindow && (
-        <ResultWindow onClose={() => setShowResultWindow(false)}>
+// [602行目]       </div> 
+// [603行目]
+// [604行目] 　　　　{showResultWindow && (
+// ★ここを書き換え
+        <NewWindow onClose={() => setShowResultWindow(false)}>
             <ResultContent 
                 results={results}
                 sectionProps={sectionProps}
@@ -920,7 +924,11 @@ function App() {
                 userPoi={userPoi}
                 setUserPoi={setUserPoi}
             />
-        </ResultWindow>
+        </NewWindow>
+// [617行目]       )}
+// [618行目]       
+// [619行目]     </div>
+
       )}
       
     </div>
