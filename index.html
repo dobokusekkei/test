@@ -139,6 +139,54 @@ function NewWindow({ children, onClose, title = "計算結果詳細" }) {
 }
 
 // ▲▲▲ 書き換え終了（これより下の function App() ... などは消さないで！） ▲▲▲
+// [145行目] return container ? createPortal(children, container) : null;
+// [146行目] }
+// [147行目] // ▲▲▲ 書き換え終了...
+
+// ★ここに以下のコードを挿入してください
+function ResultContent({ results, sectionProps, loads, spans, supports, totalLength, finalPoiData, userPoi, setUserPoi }) {
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-end border-b pb-2">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-800">計算結果詳細ビュー</h2>
+                    <p className="text-sm text-slate-500">断面: {sectionProps.label} / 全長: {totalLength.toFixed(2)}m</p>
+                </div>
+                <div className="text-right text-xs text-slate-400">
+                    ※このウィンドウは印刷用に最適化されていません。<br/>印刷には親画面の「印刷」ボタンを使用してください。
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <ResultBox label="最大M (+)" val={results.bounds.maxM_pos} x={results.bounds.maxM_pos_x} unit="kN·m" color="text-emerald-600" />
+                <ResultBox label="最大M (-)" val={results.bounds.maxM_neg} x={results.bounds.maxM_neg_x} unit="kN·m" color="text-red-600" />
+                <ResultBox label="最大たわみ" val={results.bounds.maxDeflection} x={results.bounds.maxDef_x} unit="mm" color="text-blue-600" />
+                <ResultBox label="最大せん断" val={results.bounds.maxShear} x={results.bounds.maxShear_x} unit="kN" color="text-amber-600" />
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 className="font-bold text-slate-600 mb-4">応力図・変位図</h3>
+                <AdvancedVisualizer spans={spans} supports={supports} totalLength={totalLength} loads={loads} results={results} />
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <PoiTable 
+                    finalPoiData={finalPoiData} 
+                    userPoi={userPoi} 
+                    setUserPoi={setUserPoi} 
+                    totalLength={totalLength} 
+                    spans={spans} 
+                    results={results}
+                    sectionProps={sectionProps}
+                />
+            </div>
+        </div>
+    );
+}
+// ★挿入ここまで
+
+// [150行目付近] // ... (以下、元のコードが続く) ...
+// [152行目付近] function App() {
 
 // ... (以下、元のコードが続く) ...
 
