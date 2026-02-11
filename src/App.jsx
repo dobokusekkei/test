@@ -744,6 +744,4 @@ function App() {
   );
 }
 
-// Reactアプリのマウント
-const root = createRoot(document.getElementById('root'));
-root.render(<App />);
+export default App;
