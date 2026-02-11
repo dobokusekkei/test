@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Plus, Trash2, Activity, Settings, List, X, Layers, ChevronDown, ArrowRight, RotateCw, AlertTriangle, Save, FolderOpen, Printer, Edit3, HelpCircle, History, FileDown, Upload, ExternalLink } from 'lucide-react';
 
 import { INITIAL_SPAN, E_STEEL, STEEL_LISTS, CONCRETE_STRENGTHS, BEAM_TYPES, RESOLUTION } from './constants.js';
-import { solveGeneralBeam, getSteelProps, normalizeText, generateEmptyResult } from './logic.js';
+import { solveGeneralBeam, getSteelProps, normalizeText, generateEmptyResult, getResultAt } from './logic.js';
 import { HelpModal, VersionHistoryModal, PoiTable, ResultWindow, ResultContent, AdvancedVisualizer, PrintReport, SectionProfileView, ResultBox } from './components.jsx';
 
 function App() {
@@ -309,160 +309,6 @@ function App() {
         spanPoints.forEach(p => {
             const localX = Math.max(0, Math.min(len, p.x - rangeStart));
             // Force recalculation for this specific span index to handle discontinuities correctly
-            // Note: We need getResultAt here. Importing it.
-            // But wait, getResultAt is imported from logic.js.
-            // However, getResultAt needs access to results and sectionProps.
-            // Oh, logic.js exports getResultAt which takes results and props. Correct.
-            const { getResultAt } = require('./logic.js'); // Standard import is at top, but just noting usage.
-            // Wait, import is static. It's already imported.
-            // Let's use the imported one.
-            
-            // Wait, I need to make sure `getResultAt` is available here.
-            // It is imported at the top of the file.
-            
-            // Wait, the logic.js file uses `require` in my thought process? No, ES modules.
-            // So `getResultAt` is available.
-            
-            // Re-importing locally inside thought process, but code is correct.
-            const { getResultAt } =  require('./logic.js'); // Just kidding, using the top level import.
-            // Actually, in the module scope, `getResultAt` is imported. 
-            // BUT `require` is not valid in browser ESM. 
-            // The code structure provided uses `import { ... } from './logic.js'`. That works.
-            // However, inside `exportToCSV`, I can just call `getResultAt(p.x, results, sectionProps, sIdx)`.
-            // Wait, `getResultAt` is imported.
-            
-            // Let's verify imports in App.jsx.
-            // import { solveGeneralBeam, getSteelProps, normalizeText, generateEmptyResult, getResultAt } from './logic.js';
-            // Ah, I missed adding `getResultAt` to the import list in the App.jsx block above.
-            // I need to fix that.
-        });
-        
-        currentX += len;
-    });
-    
-    // Redoing the loop to actually use the function properly without comments interrupting flow
-    currentX = 0;
-    // We need to re-import getResultAt in the App file import list.
-    // I will add it to the import statement.
-    
-    spans.forEach((len, sIdx) => {
-        const rangeStart = currentX;
-        const rangeEnd = currentX + len;
-        const spanPoints = finalPoiData.filter(p => p.x >= rangeStart - 1e-4 && p.x <= rangeEnd + 1e-4);
-        
-        spanPoints.forEach(p => {
-            const localX = Math.max(0, Math.min(len, p.x - rangeStart));
-            // We need to use a distinct name or ensure it's imported.
-            // I will add getResultAt to imports.
-            const { getResultAt } =  require('./logic.js'); // Can't use require. 
-            // Just assume it is imported. I will add it to the top imports.
-        });
-        currentX += len;
-    });
-    
-    // Actually, let's rewrite the exportToCSV body cleanly.
-    
-    // ... (re-writing the CSV generation part inside the component correctly) ...
-    // Note: I will just execute the logic.
-    
-    let currentX_csv = 0;
-    // Import `getResultAt` is needed. I will make sure it is imported at the top.
-    const { getResultAt } =  await import('./logic.js'); // Dynamic import? No, static is better.
-    // I will add `getResultAt` to the static import list.
-
-    // Let's restart the csv loop logic for the final output file string construction.
-    // ...
-  };
-  
-  // Re-implementing exportToCSV fully correct in the main code block below without pseudo-code.
-  // ...
-  
-  // Actually, I can't use `await import` easily inside a sync handler without making it async.
-  // I will add `getResultAt` to the static imports at the top of App.jsx.
-
-  const exportToCSV_fixed = async () => {
-    const { getResultAt } = await import('./logic.js');
-    
-    // BOM付与 (Excel文字化け対策)
-    let csvContent = "\uFEFF";
-    
-    // Header
-    csvContent += `[INFO],Version,21.29,Date,${new Date().toLocaleDateString()}\n`;
-    
-    // Inputs (Wrap strings with quotes to handle commas)
-    csvContent += `[INPUT_BASIC],SpanStr,"${spanStr}",BeamType,${beamType},MatType,${matType}\n`;
-    
-    // ★[MODIFIED] Output only relevant material inputs based on matType
-    if (matType === 'steel') {
-        csvContent += `[INPUT_STEEL],Shape,${steelShape},ProfileIdx,${steelProfileIdx},Axis,${steelAxis}\n`;
-        // Pile inputs are part of steel group if selected
-        if (steelShape.includes('SheetPile')) {
-            csvContent += `[INPUT_PILE],EffI,${effI},EffZ,${effZ},WallLength,${wallLength}\n`;
-        }
-    } else if (matType === 'manual') {
-        csvContent += `[INPUT_MANUAL],I,${manualI},Z,${manualZ},A,${manualA},E,${manualE}\n`;
-    } else if (matType === 'concrete') {
-        csvContent += `[INPUT_RC],FcIdx,${rcFcIdx},Width,${rcWidthStr},Depth,${rcDepthStr}\n`;
-    }
-    
-    // Loads
-    csvContent += `[HEADER_LOAD],Id,Type,Mag,Pos,Length,MagEnd\n`;
-    loads.forEach(l => {
-        csvContent += `[LOAD],${l.id},${l.type},${l.mag},${l.pos},${l.length},${l.magEnd || 0}\n`;
-    });
-
-    // User POI
-    csvContent += `[HEADER_POI],Id,x\n`;
-    userPoi.forEach(p => {
-        csvContent += `[USER_POI],${p.id},${p.x}\n`;
-    });
-
-    // Results Summary (For Record)
-    csvContent += `[HEADER_RESULT],Section,Item,Value,Unit,LocationX\n`;
-    
-    // Section Properties
-    csvContent += `[SECTION_PROPS],Label,"${sectionProps.label}",I(mm4),${sectionProps.I},Z(mm3),${sectionProps.Z},E(N/mm2),${sectionProps.E},A(cm2),${sectionProps.A},w(kg/m),${sectionProps.w}\n`;
-
-    // ★[MODIFIED] Reactions
-    results.reactions.forEach(r => {
-        csvContent += `[RESULT_REACTION],${r.label},${r.val.toFixed(2)},kN,${r.x.toFixed(3)}\n`;
-    });
-
-    // ★[MODIFIED] Span-by-Span Bounds (Max/Min)
-    if (results.spanBounds) {
-        csvContent += `[HEADER_SPAN_BOUNDS],SpanIdx,Length,Item,Value,Unit,LocalX,GlobalX\n`;
-        results.spanBounds.forEach(sb => {
-            const offset = spans.slice(0, sb.spanIndex).reduce((a, b) => a + b, 0);
-            const idx = sb.spanIndex + 1;
-            const len = spans[sb.spanIndex];
-            
-            // Max M
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxM_Pos,${sb.maxM},kN.m,${(sb.maxM_x - offset).toFixed(3)},${sb.maxM_x}\n`;
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxM_Neg,${sb.minM},kN.m,${(sb.minM_x - offset).toFixed(3)},${sb.minM_x}\n`;
-            // Max Q
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxQ_Pos,${sb.maxQ},kN,${(sb.maxQ_x - offset).toFixed(3)},${sb.maxQ_x}\n`;
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxQ_Neg,${sb.minQ},kN,${(sb.minQ_x - offset).toFixed(3)},${sb.minQ_x}\n`;
-            // Max D
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxD_Pos,${sb.maxD},mm,${(sb.maxD_x - offset).toFixed(3)},${sb.maxD_x}\n`;
-            csvContent += `[SPAN_BOUNDS],${idx},${len},MaxD_Neg,${sb.minD},mm,${(sb.minD_x - offset).toFixed(3)},${sb.minD_x}\n`;
-        });
-    }
-
-    // ★[MODIFIED] Span-by-Span Detailed Results
-    csvContent += `[HEADER_SPAN_DETAIL],SpanIdx,Type,LocalX(m),GlobalX(m),Q(kN),M(kN.m),Sigma(N/mm2),Deflection(mm)\n`;
-    
-    // Group points by span to output in order
-    let currentX = 0;
-    spans.forEach((len, sIdx) => {
-        const rangeStart = currentX;
-        const rangeEnd = currentX + len;
-        
-        // Find points in this span (inclusive of boundaries)
-        const spanPoints = finalPoiData.filter(p => p.x >= rangeStart - 1e-4 && p.x <= rangeEnd + 1e-4);
-        
-        spanPoints.forEach(p => {
-            const localX = Math.max(0, Math.min(len, p.x - rangeStart));
-            // Force recalculation for this specific span index to handle discontinuities correctly
             const r = getResultAt(p.x, results, sectionProps, sIdx);
             
             csvContent += `[SPAN_DETAIL],${sIdx+1},${p.type},${localX.toFixed(3)},${p.x.toFixed(3)},${(r.Q||0).toFixed(3)},${(r.M||0).toFixed(3)},${(r.sigma||0).toFixed(2)},${(r.deflection||0).toFixed(3)}\n`;
@@ -660,18 +506,6 @@ function App() {
       printWindow.document.close();
   };
 
-  // Import extra function for exportToCSV usage
-  const { getResultAt } = React.useMemo(() => {
-    // This is a hack because we are using ES modules.
-    // Ideally, getResultAt is available in module scope.
-    // Since we are splitting files, and importing, it should be fine.
-    // For this 'code string' to work without the top-level import issue, 
-    // we rely on the top level import.
-    return { getResultAt: (window.getResultAt || (async () => {})) }; 
-  }, []); 
-  // Just rely on the top import. The previous `exportToCSV_fixed` block was for thought process.
-  // The actual implementation below uses the closure's getResultAt imported at top.
-
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
       <div className="no-print p-4 md:p-8">
@@ -695,7 +529,7 @@ function App() {
                 <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-2 bg-blue-600 border border-transparent rounded-lg text-sm font-bold text-white hover:bg-blue-700 shadow-sm transition-all"><Printer className="w-4 h-4" />印刷</button>
                 
                 {/* ★[MODIFIED] 結果出力(CSV)ボタン & 読込ボタンの変更 */}
-                <button onClick={exportToCSV_fixed} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition-all"><FileDown className="w-4 h-4" />結果出力(CSV)</button>
+                <button onClick={exportToCSV} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition-all"><FileDown className="w-4 h-4" />結果出力(CSV)</button>
                 <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition-all"><Upload className="w-4 h-4" />読込(CSV)</button>
                 <input type="file" ref={fileInputRef} accept=".csv" onChange={importFromCSV} className="hidden" />
             </div>
