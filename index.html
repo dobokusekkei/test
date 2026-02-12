@@ -80,13 +80,45 @@ import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Plus, Trash2, Activity, Settings, Layers, AlertTriangle, Printer, History, HelpCircle, FileDown, Upload, ExternalLink } from 'lucide-react';
 
-// Import split modules
-import { 
+// --- Custom Loader for JSX Modules ---
+// ブラウザ標準ではJSXファイルを分割importできないため、
+// Babelを使って動的にトランスパイル・インポートするローダー関数を定義
+async function loadJSX(path) {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`Failed to load ${path}`);
+    let code = await response.text();
+    
+    // 相対パスのimportを絶対パス(現在のページ基準)に置換
+    // これによりBlob URL内からでも正しく外部モジュールを参照可能にする
+    code = code.replace(/from\s+['"]\.\/([^'"]+)['"]/g, (match, p1) => {
+        return `from '${new URL(p1, document.baseURI).href}'`;
+    });
+
+    // JSXをブラウザが理解できるJSに変換
+    const transformed = Babel.transform(code, {
+        presets: ['react'],
+        filename: path
+    }).code;
+    
+    // 変換後のコードをBlobとして実行可能なURLに変換
+    const blob = new Blob([transformed], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    return import(url);
+}
+
+// 分割ファイルの読み込み (非同期)
+// Pure JSはそのままimport, JSXを含むファイルはローダー経由でimport
+const Engine = await import('./structure_engine.js');
+const Viz = await loadJSX('./structure_viz.js');
+const UI = await loadJSX('./structure_ui.js');
+
+// 読み込んだモジュールから必要な関数・コンポーネントを展開
+const { 
     INITIAL_SPAN, RESOLUTION, E_STEEL, STEEL_DB, STEEL_LISTS, CONCRETE_STRENGTHS, COLORS, BEAM_TYPES,
     normalizeText, getSteelProps, solveGeneralBeam, getResultAt, generateEmptyResult 
-} from './structure_engine.js';
-import { AdvancedVisualizer, SectionProfileView } from './structure_viz.js';
-import { HelpModal, VersionHistoryModal, ResultBox, PoiTable, PrintReport, ResultWindow, ResultContent } from './structure_ui.js';
+} = Engine;
+const { AdvancedVisualizer, SectionProfileView } = Viz;
+const { HelpModal, VersionHistoryModal, ResultBox, PoiTable, PrintReport, ResultWindow, ResultContent } = UI;
 
 function App() {
   // --- States ---
