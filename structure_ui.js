@@ -390,7 +390,7 @@ export function PrintReport({ params }) {
                 </div>
                 <div className="text-right">
                     <p className="font-bold text-sm">作成日: {today}</p>
-                    <p className="text-xs text-slate-500">Ver 21.30</p>
+                    <p className="text-xs text-slate-500">Ver 21.29</p>
                 </div>
             </header>
 
