@@ -1,15 +1,16 @@
-// structure_engine.js
-// 構造計算ロジック、データベース、定数定義
+/**
+ * structure_engine.js
+ * 構造計算ロジック、データベース、定数定義
+ * 依存関係: なし
+ */
 
-// --- 定数 ---
 export const INITIAL_SPAN = "6.0";
-export const RESOLUTION = 400; // 描画解像度（SVG用）
-export const E_STEEL = 205000; // N/mm2
+export const RESOLUTION = 400; 
+export const E_STEEL = 205000; 
 export const EPS = 1e-9; 
 
 // --- 鋼材データベース (公称値: cm単位) ---
 export const STEEL_DB = {
-  // --- H形鋼 (JIS G 3192) ---
   'H-100x100x6x8':    { Ix: 378, Iy: 134, Zx: 75.6, Zy: 26.7, A: 21.59, w: 16.9 },
   'H-125x60x6x8':     { Ix: 413, Iy: 29.2, Zx: 66.1, Zy: 9.73, A: 16.84, w: 13.2 },
   'H-125x125x6.5x9':  { Ix: 847, Iy: 293, Zx: 136, Zy: 47.0, A: 30.00, w: 23.6 },
@@ -40,7 +41,6 @@ export const STEEL_DB = {
   'H-588x300x12x20':  { Ix: 118000, Iy: 9020, Zx: 4020, Zy: 601, A: 192.5, w: 151 },
   'H-600x200x11x17':  { Ix: 77600, Iy: 2280, Zx: 2590, Zy: 228, A: 134.4, w: 106 },
 
-  // --- 溝形鋼 (JIS G 3192) ---
   'C-75x40x5x7':      { Ix: 75.3, Iy: 12.2, Zx: 20.1, Zy: 4.47, A: 8.818, w: 6.92 },
   'C-100x50x5x7.5':   { Ix: 188, Iy: 26.0, Zx: 37.6, Zy: 7.52, A: 11.92, w: 9.36 },
   'C-125x65x6x8':     { Ix: 424, Iy: 61.8, Zx: 67.8, Zy: 13.4, A: 17.11, w: 13.4 },
@@ -53,7 +53,6 @@ export const STEEL_DB = {
   'C-300x90x9x13':    { Ix: 6440, Iy: 309, Zx: 429, Zy: 45.7, A: 48.57, w: 38.1 },
   'C-380x100x10.5x16': { Ix: 14500, Iy: 535, Zx: 763, Zy: 67.6, A: 69.39, w: 54.5 },
 
-  // --- 軽量溝形鋼 (JIS G 3350) ---
   'C-60x30x10x1.6':   { Ix: 10.6, Iy: 2.37, Zx: 3.54, Zy: 1.12, A: 2.155, w: 1.69 },
   'C-60x30x10x2.3':   { Ix: 14.6, Iy: 3.20, Zx: 4.88, Zy: 1.54, A: 3.018, w: 2.37 },
   'C-75x45x15x1.6':   { Ix: 27.0, Iy: 7.82, Zx: 7.19, Zy: 2.50, A: 2.955, w: 2.32 },
@@ -65,7 +64,6 @@ export const STEEL_DB = {
   'C-125x50x20x3.2':  { Ix: 178, Iy: 34.2, Zx: 28.5, Zy: 9.20, A: 7.877, w: 6.18 },
   'C-150x75x20x3.2':  { Ix: 387, Iy: 90.9, Zx: 51.6, Zy: 16.3, A: 10.68, w: 8.38 },
 
-  // --- 等辺山形鋼 (JIS G 3192) ---
   'L-30x30x3':        { Ix: 1.13, Iy: 1.13, Zx: 0.52, Zy: 0.52, A: 1.727, w: 1.36 },
   'L-40x40x3':        { Ix: 2.87, Iy: 2.87, Zx: 0.98, Zy: 0.98, A: 2.327, w: 1.83 },
   'L-40x40x5':        { Ix: 4.45, Iy: 4.45, Zx: 1.58, Zy: 1.58, A: 3.755, w: 2.95 },
@@ -83,29 +81,19 @@ export const STEEL_DB = {
   'L-130x130x12':     { Ix: 516, Iy: 516, Zx: 57.0, Zy: 57.0, A: 29.76, w: 23.4 },
   'L-150x150x12':     { Ix: 804, Iy: 804, Zx: 75.7, Zy: 75.7, A: 34.77, w: 27.3 },
 
-  // --- 鋼矢板 (U形 - JIS A 5523/5528) 1mあたり公称値 ---
   'SP-II':   { Ix: 8740,  Zx: 874,  Iy: 0, Zy: 0, H: 100, B: 400, t: 10.5, A: 152.9, w: 120 },
   'SP-III':  { Ix: 16800, Zx: 1340, Iy: 0, Zy: 0, H: 125, B: 400, t: 13.0, A: 191.0, w: 150 },
   'SP-IV':   { Ix: 22700, Zx: 2270, Iy: 0, Zy: 0, H: 170, B: 400, t: 15.5, A: 242.5, w: 190 },
   'SP-VL':   { Ix: 31500, Zx: 3150, Iy: 0, Zy: 0, H: 200, B: 500, t: 24.3, A: 267.5, w: 210 },
   'SP-VIL':  { Ix: 38600, Zx: 3820, Iy: 0, Zy: 0, H: 225, B: 500, t: 27.6, A: 306.0, w: 240 },
-
-  // --- 広幅鋼矢板 (wタイプ - 有効幅600mm) 1mあたり公称値 ---
   'SP-IIw':  { Ix: 13000, Zx: 1000, Iy: 0, Zy: 0, H: 130, B: 600, t: 10.3, A: 131.2, w: 103 },
   'SP-IIIw': { Ix: 22400, Zx: 1360, Iy: 0, Zy: 0, H: 180, B: 600, t: 13.4, A: 173.3, w: 136 },
   'SP-IVw':  { Ix: 32400, Zx: 2160, Iy: 0, Zy: 0, H: 225, B: 600, t: 18.0, A: 202.5, w: 159 },
-
-  // --- ハット形鋼矢板 (有効幅900mm) 1mあたり公称値 ---
   'SP-10H':  { Ix: 10800, Zx: 902,  Iy: 0, Zy: 0, H: 230, B: 900, t: 10.8, A: 122.2, w: 95.9 },
   'SP-25H':  { Ix: 24400, Zx: 1610, Iy: 0, Zy: 0, H: 300, B: 900, t: 13.2, A: 169.6, w: 133 },
-
-  // --- 軽量鋼矢板 (Lightweight Sheet Pile) 1mあたり公称値 ---
-  // LSW No.1 (有効幅200mm -> 1mで5枚)
   'LSP-1':   { Ix: 382,   Zx: 147,  Iy: 0, Zy: 0, H: 35,  B: 200, t: 3.2,  A: 61.2,  w: 48.0 }, 
-  // LSW No.2 (有効幅250mm -> 1mで4枚)
   'LSP-2':   { Ix: 644,   Zx: 208,  Iy: 0, Zy: 0, H: 40,  B: 250, t: 4.0,  A: 77.4,  w: 60.8 },
 
-  // --- 角形鋼管 (Square Pipe / JIS G 3466 STKR400等) ---
   'Square-50x50x2.3': { Ix: 16.3, Iy: 16.3, Zx: 6.54, Zy: 6.54, A: 4.321, w: 3.39 },
   'Square-60x60x2.3': { Ix: 28.8, Iy: 28.8, Zx: 9.61, Zy: 9.61, A: 5.241, w: 4.11 },
   'Square-75x75x3.2': { Ix: 78.2, Iy: 78.2, Zx: 20.8, Zy: 20.8, A: 9.043, w: 7.10 },
@@ -118,7 +106,6 @@ export const STEEL_DB = {
   'Square-300x300x12.0': { Ix: 20100, Iy: 20100, Zx: 1340, Zy: 1340, A: 135.5, w: 106 },
 };
 
-// 鋼材リスト（UI表示用）
 export const STEEL_LISTS = {
   H: Object.keys(STEEL_DB).filter(k => k.startsWith('H')),
   Channel: Object.keys(STEEL_DB).filter(k => k.startsWith('C') && !k.includes('x1.6') && !k.includes('x2.3') && !k.includes('x3.2')),
@@ -164,47 +151,25 @@ export function normalizeText(text) {
   return text.replace(/[０-９．，]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/、/g, ',');
 }
 
-/**
- * 鋼材特性を取得する関数
- */
 export function getSteelProps(shape, name, axis) {
   const props = STEEL_DB[name];
   if (!props) {
     return { H:0, B:0, t1:0, t2:0, I:0, Z:0, A:0, w:0, label: name + ' (Unk)' };
   }
-
-  // 寸法情報の取得（描画用）
   let H = 0, B = 0, t1 = 0, t2 = 0, C_lip = 0;
-    
-  if (shape.includes('SheetPile')) {
-    H = props.H; B = props.B; t1 = props.t; t2 = props.t;
-  } else if (shape === 'SquarePipe') {
-    // Square-100x100x3.2 -> H=100, B=100, t1=3.2
-    const nums = name.replace(/^Square-/, '').split('x').map(Number);
-    [H, B, t1] = nums; t2 = t1;
-  } else {
+  if (shape.includes('SheetPile')) { H = props.H; B = props.B; t1 = props.t; t2 = props.t; } 
+  else if (shape === 'SquarePipe') { const nums = name.replace(/^Square-/, '').split('x').map(Number); [H, B, t1] = nums; t2 = t1; } 
+  else {
     const nums = name.replace(/^[A-Z]-/, '').split('x').map(Number);
     if (shape === 'H' || shape === 'Channel') { [H, B, t1, t2] = nums; } 
     else if (shape === 'LipChannel') { [H, B, C_lip, t1] = nums; t2 = t1; } 
     else if (shape === 'Angle') { [H, B, t1] = nums; t2 = t1; }
   }
-
-  // 軸に応じた値を返す (I, Zは mm単位に換算)
   let I, Z;
-  if (axis === 'strong') {
-    I = props.Ix * 10000; 
-    Z = props.Zx * 1000;
-  } else {
-    I = props.Iy * 10000; 
-    Z = props.Zy * 1000;
-  }
-
+  if (axis === 'strong') { I = props.Ix * 10000; Z = props.Zx * 1000; } 
+  else { I = props.Iy * 10000; Z = props.Zy * 1000; }
   return { H, B, t1, t2, C_lip, I, Z, A: props.A, w: props.w };
 }
-
-// ==========================================
-// [CORE ENGINE] Universal Beam Solver
-// ==========================================
 
 export function solveGeneralBeam(spans, supports, loads, resolution, props) {
   const totalL = spans.reduce((a, b) => a + b, 0);
@@ -219,19 +184,9 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
   spans.forEach((len, i) => {
     const sx = cx; const ex = cx + len;
     loads.forEach(l => {
-      // ----------------------------------------------------------------
-      // ★[MODIFIED] 固定端(Fixed)上の集中モーメント荷重を計算から除外 (v21.18)
-      // ----------------------------------------------------------------
-      // 左端固定の場合: 座標0 かつ 支点0がfixed
-      if (l.type === 'moment' && l.pos === 0 && supports[0] === 'fixed') {
-          return; 
-      }
-      // 右端固定の場合: 座標totalL かつ 最終支点がfixed
-      if (l.type === 'moment' && l.pos === totalL && supports[supports.length - 1] === 'fixed') {
-          return;
-      }
-      // ----------------------------------------------------------------
-
+      if (l.type === 'moment' && l.pos === 0 && supports[0] === 'fixed') return; 
+      if (l.type === 'moment' && l.pos === totalL && supports[supports.length - 1] === 'fixed') return;
+      
       const lStart = l.pos;
       const lEnd = l.type === 'point' || l.type === 'moment' ? l.pos : l.pos + l.length;
       const oStart = Math.max(sx, lStart);
@@ -254,13 +209,11 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
     for (let i = 0; i < idxStart; i++) {
        const distToSupport = spans.slice(i+1, idxStart).reduce((a,b)=>a+b, 0);
        spanLoads[i].forEach(l => {
-         if (l.type === 'moment') {
-             M_start += l.mag;
-         } else {
+         if (l.type === 'moment') { M_start += l.mag; } 
+         else {
              const { totalForce, momentA } = getLoadIntegral(l);
              const xc = totalForce !== 0 ? momentA / totalForce : 0;
-             const arm = (spans[i] - xc) + distToSupport;
-             M_start -= totalForce * arm; 
+             M_start -= totalForce * ((spans[i] - xc) + distToSupport); 
          }
        });
     }
@@ -270,13 +223,11 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
     for (let i = idxEnd; i < spans.length; i++) {
        const distToSupport = spans.slice(idxEnd, i).reduce((a,b)=>a+b, 0);
        spanLoads[i].forEach(l => {
-         if (l.type === 'moment') {
-             M_end -= l.mag; 
-         } else {
+         if (l.type === 'moment') { M_end -= l.mag; } 
+         else {
              const { totalForce, momentA } = getLoadIntegral(l);
              const xc = totalForce !== 0 ? momentA / totalForce : 0;
-             const arm = distToSupport + xc;
-             M_end -= totalForce * arm;
+             M_end -= totalForce * (distToSupport + xc);
          }
        });
     }
@@ -297,7 +248,6 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
       const supportType = supports[nodeIdx]; 
       const leftSpanIdx = nodeIdx - 1;
       const rightSpanIdx = nodeIdx;
-      // ★[MODIFIED] High Precision CalcPhi
       const phiL_load = (leftSpanIdx >= idxStart) ? calcPhi(spans[leftSpanIdx], spanLoads[leftSpanIdx]).phiR : 0;
       const phiR_load = (rightSpanIdx < idxEnd) ? calcPhi(spans[rightSpanIdx], spanLoads[rightSpanIdx]).phiL : 0;
 
@@ -306,17 +256,13 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
           A[k][k] = 2 * spans[rightSpanIdx];
           if (numNodes > 1) A[k][k+1] = spans[rightSpanIdx];
           B[k] = -6 * phiR_load;
-        } else {
-          A[k][k] = 1; B[k] = M_start;
-        }
+        } else { A[k][k] = 1; B[k] = M_start; }
       } else if (k === numNodes - 1) {
         if (supportType === 'fixed') {
           const len = spans[leftSpanIdx];
           A[k][k-1] = len; A[k][k] = 2 * len;
           B[k] = -6 * phiL_load;
-        } else {
-          A[k][k] = 1; B[k] = M_end;
-        }
+        } else { A[k][k] = 1; B[k] = M_end; }
       } else {
         A[k][k-1] = spans[leftSpanIdx];
         A[k][k] = 2 * (spans[leftSpanIdx] + spans[rightSpanIdx]);
@@ -330,29 +276,19 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
     }
   }
 
-  const shearData = []; 
-  const momentData = [];
+  const shearData = []; const momentData = [];
   let globalX = 0;
 
   for (let i = 0; i < spans.length; i++) {
     const len = spans[i];
     const sLoads = spanLoads[i];
-    const ML = nodeMoments[i];
-    const MR = nodeMoments[i+1];
-
+    const ML = nodeMoments[i]; const MR = nodeMoments[i+1];
     const keyPoints = new Set([0, len]);
     sLoads.forEach(l => { 
         keyPoints.add(l.pos); 
-        if (l.type === 'moment') {
-            keyPoints.add(Math.max(0, l.pos - 1e-6));
-            keyPoints.add(Math.min(len, l.pos + 1e-6));
-        } else if(l.type !== 'point') {
-            keyPoints.add(l.pos + l.length);
-        }
+        if (l.type === 'moment') { keyPoints.add(Math.max(0, l.pos - 1e-6)); keyPoints.add(Math.min(len, l.pos + 1e-6)); } 
+        else if(l.type !== 'point') { keyPoints.add(l.pos + l.length); }
     });
-    
-    // ★[MODIFIED] Graph generation pitch 5mm (200 steps/m) optimized for SVG
-    // Limit total points per span to avoid rendering lag
     const steps = Math.max(50, Math.min(Math.ceil(len * 200), 2000));
     for(let k=0; k<=steps; k++) keyPoints.add(k * (len / steps));
     const sortedLx = Array.from(keyPoints).sort((a,b)=>a-b);
@@ -364,15 +300,10 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
     sortedLx.forEach(lx => {
         const gx = globalX + lx;
         const Qb = (MR - ML) / len;
-        
         const Q_left = getSectionForceSimple(lx, sLoads, Ra_s, 'left').Q + Qb;
         const Q_right = getSectionForceSimple(lx, sLoads, Ra_s, 'right').Q + Qb;
-        
         shearData.push({ x: gx, y: Q_left });
-        if (Math.abs(Q_left - Q_right) > 1e-6) {
-            shearData.push({ x: gx, y: Q_right });
-        }
-        
+        if (Math.abs(Q_left - Q_right) > 1e-6) { shearData.push({ x: gx, y: Q_right }); }
         const Ms = getSectionForceSimple(lx, sLoads, Ra_s).M;
         const Mb = ML + (MR - ML) * (lx / len);
         momentData.push({ x: gx, y: Ms + Mb });
@@ -380,8 +311,7 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
     globalX += len;
   }
 
-  const deflectionData = [];
-  const rawIntegration = [];
+  const deflectionData = []; const rawIntegration = [];
   let curTh = 0, curY = 0;
   rawIntegration.push({ x: 0, th: 0, y: 0 });
 
@@ -389,7 +319,6 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
       const p1 = momentData[j], p2 = momentData[j+1];
       const dx = p2.x - p1.x;
       if (dx < 1e-8) continue;
-      
       const phi1 = -(p1.y * 1e6) / (props.E * props.I);
       const phi2 = -(p2.y * 1e6) / (props.E * props.I);
       const dTh = (phi1 + phi2) * 0.5 * dx * 1000;
@@ -419,29 +348,21 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
   if (supportPoints.length > 0) {
       const firstS = supportPoints[0];
       if (firstS.type === 'fixed') {
-          const raw = getRaw(firstS.x);
-          C1 = -raw.th;
-          C2 = -raw.y - C1 * firstS.x;
+          const raw = getRaw(firstS.x); C1 = -raw.th; C2 = -raw.y - C1 * firstS.x;
       } else if (supportPoints.length >= 2) {
           const s1 = supportPoints[0], s2 = supportPoints[supportPoints.length - 1];
           const r1 = getRaw(s1.x), r2 = getRaw(s2.x);
-          C1 = -(r2.y - r1.y) / (s2.x - s1.x);
-          C2 = -r1.y - C1 * s1.x;
+          C1 = -(r2.y - r1.y) / (s2.x - s1.x); C2 = -r1.y - C1 * s1.x;
       } else {
-          const r1 = getRaw(firstS.x);
-          C1 = 0; C2 = -r1.y;
+          const r1 = getRaw(firstS.x); C1 = 0; C2 = -r1.y;
       }
   }
-
-  rawIntegration.forEach(p => {
-      deflectionData.push({ x: p.x, y: p.y + C1 * p.x + C2 });
-  });
+  rawIntegration.forEach(p => { deflectionData.push({ x: p.x, y: p.y + C1 * p.x + C2 }); });
 
   const spanBounds = [];
   let sx = 0;
   for (let i = 0; i < spans.length; i++) {
     const ex = sx + spans[i];
-    
     const sLoads = spanLoads[i];
     let sumP=0, sumM=0;
     sLoads.forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
@@ -462,7 +383,6 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
              zeroCrossX.push(x0);
         }
     }
-
     const sM_points = momentData.filter(d => d.x >= sx - EPS && d.x <= ex + EPS);
     const sQ_points = shearData.filter(d => d.x >= sx - EPS && d.x <= ex + EPS);
     const sD_points = deflectionData.filter(d => d.x >= sx - EPS && d.x <= ex + EPS);
@@ -495,35 +415,20 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
   validSupportIndices.forEach(idx => {
     let pos = 0; for(let k=0; k<idx; k++) pos += spans[k];
     let R_val = 0;
-
     if (idx > 0) {
-        const i = idx - 1;
-        const len = spans[i];
-        const sLoads = spanLoads[i];
-        let sumP=0, sumM=0;
-        sLoads.forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
+        const i = idx - 1; const len = spans[i];
+        let sumP=0, sumM=0; spanLoads[i].forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
         const Rb_simple = sumM/len; 
-        
         const ML = nodeMoments[i]; const MR = nodeMoments[i+1];
-        const Q_mom = (MR - ML) / len; 
-        R_val += (Rb_simple - Q_mom);
+        R_val += (Rb_simple - (MR - ML) / len);
     }
-
     if (idx < spans.length) {
-        const i = idx;
-        const len = spans[i];
-        const sLoads = spanLoads[i];
-        let sumP=0, sumM=0;
-        sLoads.forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
-        const Rb_simple = sumM/len;
-        const Ra_simple = sumP - Rb_simple;
-
+        const i = idx; const len = spans[i];
+        let sumP=0, sumM=0; spanLoads[i].forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
+        const Rb_simple = sumM/len; const Ra_simple = sumP - Rb_simple;
         const ML = nodeMoments[i]; const MR = nodeMoments[i+1];
-        const Q_mom = (MR - ML) / len;
-        
-        R_val += (Ra_simple + Q_mom);
+        R_val += (Ra_simple + (MR - ML) / len);
     }
-    
     reactions.push({ x: pos, val: R_val, label: String.fromCharCode(65+idx) });
   });
 
@@ -532,7 +437,6 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
 
   return {
     shearData, momentData, deflectionData, spanBounds, reactions,
-    // ★[MODIFIED] Added Raw Data for Exact Analytical Calculation
     raw: { spans, spanLoads, nodeMoments, supports },
     bounds: { 
       maxShear: Math.max(...shearData.map(d=>Math.abs(d.y))), maxShear_x: 0,
@@ -546,33 +450,23 @@ export function solveGeneralBeam(spans, supports, loads, resolution, props) {
   };
 }
 
-// ★[MODIFIED] Result Retrieval Logic (Exact Analysis & Support Correction)
 export function getResultAt(x, results, props, targetSpanIndex = -1) {
     if (!results.momentData) return {};
-
-    // 1. Analytical Calculation for Forces (Q, M, Sigma)
     if (results.raw) {
         const { spans, spanLoads, nodeMoments, supports } = results.raw;
-        let currentX = 0;
-        let spanIndex = -1;
-        let localX = 0;
+        let currentX = 0, spanIndex = -1, localX = 0;
 
-        // ★[MODIFIED] Span enforcement logic
         if (targetSpanIndex !== -1 && targetSpanIndex >= 0 && targetSpanIndex < spans.length) {
             for(let k=0; k<targetSpanIndex; k++) currentX += spans[k];
             spanIndex = targetSpanIndex;
             localX = x - currentX;
-            // Force localX to be within bounds (handle precision errors)
             if(localX < 0 && localX > -0.001) localX = 0;
             if(localX > spans[spanIndex] && localX < spans[spanIndex] + 0.001) localX = spans[spanIndex];
         } else {
-            // Auto detection (fallback)
             for(let i=0; i<spans.length; i++) {
                 if (x >= currentX - 1e-9 && x <= currentX + spans[i] + 1e-9) {
-                    spanIndex = i;
-                    localX = x - currentX;
-                    if(localX < 0) localX = 0;
-                    if(localX > spans[i]) localX = spans[i];
+                    spanIndex = i; localX = x - currentX;
+                    if(localX < 0) localX = 0; if(localX > spans[i]) localX = spans[i];
                     break;
                 }
                 currentX += spans[i];
@@ -585,14 +479,11 @@ export function getResultAt(x, results, props, targetSpanIndex = -1) {
             const ML = nodeMoments[spanIndex];
             const MR = nodeMoments[spanIndex + 1];
 
-            // Simple Beam Reaction for this span
             let sumP=0, sumM=0;
             loads.forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
             const Rb_simple = sumM/len;
             const Ra_simple = sumP - Rb_simple;
 
-            // Superposition
-            // ★[MODIFIED] Use side='right' to include point loads/moments at the exact location
             const simpleRes = getSectionForceSimple(localX, loads, Ra_simple, 'right');
             const Qb = (MR - ML) / len;
             const Mb = ML + (MR - ML) * (localX / len);
@@ -600,35 +491,21 @@ export function getResultAt(x, results, props, targetSpanIndex = -1) {
             const totalQ = simpleRes.Q + Qb;
             let totalM = simpleRes.M + Mb;
 
-            // ★[PATCH] 右端における集中モーメント荷重の補正 (v21.17 Modified)
-            // 右端がフリーまたは単純支持(pin/roller)のときで右端に集中モーメントが作用するときに、結果表の右端のモーメント表示を補正する
-            // (ユーザー指示により、このブロックは維持する)
             const totalLen = spans.reduce((a,b)=>a+b, 0);
             const rightSupport = supports[supports.length - 1];
-            
-            // 対象となる支持条件: free, pin, roller (右端単純支持も含む)
             const isTargetSupport = ['free', 'pin', 'roller'].includes(rightSupport);
 
             if (Math.abs(x - totalLen) < 0.001 && isTargetSupport) {
                 const lastSpanIdx = spans.length - 1;
                 const lastSpanLoads = spanLoads[lastSpanIdx];
                 const lastSpanLen = spans[lastSpanIdx];
-                
                 let endMomentSum = 0;
                 lastSpanLoads.forEach(l => {
-                    // ローカル座標でスパン終端にあるモーメント荷重を探す
-                    if (l.type === 'moment' && Math.abs(l.pos - lastSpanLen) < 0.001) {
-                        endMomentSum += l.mag;
-                    }
+                    if (l.type === 'moment' && Math.abs(l.pos - lastSpanLen) < 0.001) { endMomentSum += l.mag; }
                 });
-                
-                // 右端に作用する集中モーメントの合計の逆の符号を加算
-                if (endMomentSum !== 0) {
-                    totalM += (-endMomentSum);
-                }
+                if (endMomentSum !== 0) { totalM += (-endMomentSum); }
             }
 
-            // 2. Deflection (Graph Interpolation + Support Zero Correction)
             let defVal = 0;
             if (results.deflectionData) {
                  const arr = results.deflectionData;
@@ -637,56 +514,35 @@ export function getResultAt(x, results, props, targetSpanIndex = -1) {
                  else {
                      const low = arr.filter(p => p.x <= x).pop();
                      const high = arr.find(p => p.x > x);
-                     if (low && high) {
-                         defVal = low.y + (high.y - low.y) * ((x - low.x)/(high.x - low.x));
-                     } else {
-                         defVal = low ? low.y : (high ? high.y : 0);
-                     }
+                     if (low && high) { defVal = low.y + (high.y - low.y) * ((x - low.x)/(high.x - low.x)); } 
+                     else { defVal = low ? low.y : (high ? high.y : 0); }
                  }
             }
 
-            // Force Zero Deflection at Supports (±1mm tolerance)
-            let supX = 0;
-            let isNearSupport = false;
+            let supX = 0; let isNearSupport = false;
             for(let i=0; i<supports.length; i++) {
                 if (supports[i] !== 'free') {
-                    if (Math.abs(x - supX) < 0.001) {
-                        isNearSupport = true;
-                        break;
-                    }
+                    if (Math.abs(x - supX) < 0.001) { isNearSupport = true; break; }
                 }
                 if (i < spans.length) supX += spans[i];
             }
             if (isNearSupport) defVal = 0;
 
-            return {
-                Q: totalQ,
-                M: totalM,
-                deflection: defVal,
-                sigma: Math.abs(totalM * 1e6 / props.Z)
-            };
+            return { Q: totalQ, M: totalM, deflection: defVal, sigma: Math.abs(totalM * 1e6 / props.Z) };
         }
     }
 
-    // Fallback logic (Graph Lookup)
     const getVal = (arr) => {
         if (!arr || arr.length === 0) return 0;
         const match = arr.find(p => Math.abs(p.x - x) < 1e-4);
         if (match) return match.y;
         const low = arr.filter(p => p.x <= x).pop();
         const high = arr.find(p => p.x > x);
-        if (low && high) {
-             return low.y + (high.y - low.y) * ((x - low.x)/(high.x - low.x));
-        }
+        if (low && high) { return low.y + (high.y - low.y) * ((x - low.x)/(high.x - low.x)); }
         return low ? low.y : (high ? high.y : 0);
     };
     const M = getVal(results.momentData);
-    return {
-        Q: getVal(results.shearData),
-        M: M,
-        deflection: getVal(results.deflectionData),
-        sigma: Math.abs(M * 1e6 / props.Z)
-    };
+    return { Q: getVal(results.shearData), M: M, deflection: getVal(results.deflectionData), sigma: Math.abs(M * 1e6 / props.Z) };
 }
 
 export function getSectionForceSimple(x, loads, Ra, side='left') {
@@ -699,9 +555,8 @@ export function getSectionForceSimple(x, loads, Ra, side='left') {
     let pLoad = { ...l, length: effectiveLen };
     if (l.type === 'trapezoid') pLoad.magEnd = l.mag + (l.magEnd - l.mag) * effectiveLen / l.length;
     
-    if (l.type === 'moment') {
-        M += l.mag; 
-    } else {
+    if (l.type === 'moment') { M += l.mag; } 
+    else {
         const r = getLoadIntegral(pLoad);
         Q -= r.totalForce; M -= (x * r.totalForce - r.momentA);
     }
@@ -720,9 +575,7 @@ export function getLoadIntegral(l) {
 
 export function calcPhi(L, loads) {
   let phiL = 0, phiR = 0; 
-  // ★[MODIFIED] Optimized Integration Step (1mm pitch = 1000 steps/m)
   const stepsPerMeter = 1000;
-  // Cap max steps to prevent freezing on long spans
   const N = Math.min(Math.max(50, Math.ceil(L * stepsPerMeter)), 10000); 
   const dx = L/N;
   let sumP=0, sumM=0; loads.forEach(l=>{ const r=getLoadIntegral(l); sumP+=r.totalForce; sumM+=r.momentA; });
