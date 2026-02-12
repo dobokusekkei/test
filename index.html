@@ -81,169 +81,6 @@ import { createPortal } from 'react-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Plus, Trash2, Activity, Settings, List, X, Layers, ChevronDown, ArrowRight, RotateCw, AlertTriangle, Save, FolderOpen, Printer, Edit3, HelpCircle, History, FileDown, Upload, ExternalLink } from 'lucide-react';
 
-// --- 初期データ定義 (JSON読み込み失敗時のフォールバック用) ---
-// ※元のコードからデータをここに移動・格納しています
-const DEFAULT_STEEL_DB = {
-  'H-100x100x6x8':    { Ix: 378, Iy: 134, Zx: 75.6, Zy: 26.7, A: 21.59, w: 16.9 },
-  'H-125x60x6x8':     { Ix: 413, Iy: 29.2, Zx: 66.1, Zy: 9.73, A: 16.84, w: 13.2 },
-  'H-125x125x6.5x9':  { Ix: 847, Iy: 293, Zx: 136, Zy: 47.0, A: 30.00, w: 23.6 },
-  'H-148x100x6x9':    { Ix: 711, Iy: 122, Zx: 96.2, Zy: 24.4, A: 26.84, w: 21.1 },
-  'H-150x75x5x7':     { Ix: 666, Iy: 49.5, Zx: 88.8, Zy: 13.2, A: 17.85, w: 14.0 },
-  'H-150x150x7x10':   { Ix: 1640, Iy: 563, Zx: 219, Zy: 75.1, A: 39.65, w: 31.1 },
-  'H-175x90x5x8':     { Ix: 1210, Iy: 89.6, Zx: 138, Zy: 19.9, A: 23.04, w: 18.1 },
-  'H-175x175x7.5x11': { Ix: 2900, Iy: 984, Zx: 331, Zy: 112, A: 51.21, w: 40.2 },
-  'H-194x150x6x9':    { Ix: 2690, Iy: 507, Zx: 277, Zy: 67.6, A: 38.11, w: 29.9 },
-  'H-200x100x5.5x8':  { Ix: 1840, Iy: 134, Zx: 184, Zy: 26.8, A: 27.16, w: 21.3 },
-  'H-200x200x8x12':   { Ix: 4720, Iy: 1600, Zx: 472, Zy: 160, A: 63.53, w: 49.9 },
-  'H-244x175x7x11':   { Ix: 6120, Iy: 984, Zx: 502, Zy: 113, A: 55.49, w: 43.6 },
-  'H-250x125x6x9':    { Ix: 4050, Iy: 294, Zx: 324, Zy: 47.0, A: 37.66, w: 29.6 },
-  'H-250x250x9x14':   { Ix: 10800, Iy: 3650, Zx: 867, Zy: 292, A: 91.43, w: 71.8 },
-  'H-294x200x8x12':   { Ix: 11300, Iy: 1600, Zx: 771, Zy: 160, A: 72.38, w: 56.8 },
-  'H-300x150x6.5x9':  { Ix: 7210, Iy: 488, Zx: 481, Zy: 65.1, A: 46.78, w: 36.7 },
-  'H-300x300x10x15':  { Ix: 20200, Iy: 6750, Zx: 1350, Zy: 450, A: 118.4, w: 93.0 },
-  'H-340x250x9x14':   { Ix: 15300, Iy: 3650, Zx: 903, Zy: 292, A: 101.5, w: 79.7 },
-  'H-350x175x7x11':   { Ix: 13600, Iy: 984, Zx: 775, Zy: 112, A: 62.91, w: 49.4 },
-  'H-350x350x12x19':  { Ix: 39800, Iy: 13600, Zx: 2280, Zy: 776, A: 171.9, w: 135 },
-  'H-390x300x10x16':  { Ix: 38700, Iy: 7210, Zx: 1980, Zy: 481, A: 133.2, w: 105 },
-  'H-400x200x8x13':   { Ix: 23700, Iy: 1740, Zx: 1190, Zy: 174, A: 83.37, w: 65.4 },
-  'H-400x400x13x21':  { Ix: 66600, Iy: 22400, Zx: 3330, Zy: 1120, A: 218.7, w: 172 },
-  'H-440x300x11x18':  { Ix: 56100, Iy: 8110, Zx: 2550, Zy: 541, A: 157.4, w: 124 },
-  'H-450x200x9x14':   { Ix: 33500, Iy: 1870, Zx: 1490, Zy: 187, A: 96.76, w: 76.0 },
-  'H-496x199x9x14':   { Ix: 41900, Iy: 1840, Zx: 1690, Zy: 185, A: 101.3, w: 79.5 },
-  'H-500x200x10x16':  { Ix: 47800, Iy: 2140, Zx: 1910, Zy: 214, A: 114.2, w: 89.6 },
-  'H-588x300x12x20':  { Ix: 118000, Iy: 9020, Zx: 4020, Zy: 601, A: 192.5, w: 151 },
-  'H-600x200x11x17':  { Ix: 77600, Iy: 2280, Zx: 2590, Zy: 228, A: 134.4, w: 106 },
-  'C-75x40x5x7':      { Ix: 75.3, Iy: 12.2, Zx: 20.1, Zy: 4.47, A: 8.818, w: 6.92 },
-  'C-100x50x5x7.5':   { Ix: 188, Iy: 26.0, Zx: 37.6, Zy: 7.52, A: 11.92, w: 9.36 },
-  'C-125x65x6x8':     { Ix: 424, Iy: 61.8, Zx: 67.8, Zy: 13.4, A: 17.11, w: 13.4 },
-  'C-150x75x6.5x10':  { Ix: 861, Iy: 117, Zx: 115, Zy: 21.2, A: 23.71, w: 18.6 },
-  'C-150x75x9x12.5':  { Ix: 1050, Iy: 147, Zx: 140, Zy: 26.6, A: 30.59, w: 24.0 },
-  'C-180x75x7x10.5':  { Ix: 1380, Iy: 131, Zx: 153, Zy: 23.6, A: 27.20, w: 21.4 },
-  'C-200x80x7.5x11':  { Ix: 1950, Iy: 168, Zx: 195, Zy: 27.4, A: 31.33, w: 24.6 },
-  'C-200x90x8x13.5':  { Ix: 2490, Iy: 277, Zx: 249, Zy: 42.1, A: 38.65, w: 30.3 },
-  'C-250x90x9x13':    { Ix: 4180, Iy: 294, Zx: 334, Zy: 43.6, A: 44.07, w: 34.6 },
-  'C-300x90x9x13':    { Ix: 6440, Iy: 309, Zx: 429, Zy: 45.7, A: 48.57, w: 38.1 },
-  'C-380x100x10.5x16': { Ix: 14500, Iy: 535, Zx: 763, Zy: 67.6, A: 69.39, w: 54.5 },
-  'C-60x30x10x1.6':   { Ix: 10.6, Iy: 2.37, Zx: 3.54, Zy: 1.12, A: 2.155, w: 1.69 },
-  'C-60x30x10x2.3':   { Ix: 14.6, Iy: 3.20, Zx: 4.88, Zy: 1.54, A: 3.018, w: 2.37 },
-  'C-75x45x15x1.6':   { Ix: 27.0, Iy: 7.82, Zx: 7.19, Zy: 2.50, A: 2.955, w: 2.32 },
-  'C-75x45x15x2.3':   { Ix: 37.6, Iy: 10.8, Zx: 10.0, Zy: 3.51, A: 4.168, w: 3.27 },
-  'C-100x50x20x1.6':  { Ix: 58.7, Iy: 16.7, Zx: 11.7, Zy: 4.41, A: 3.675, w: 2.88 },
-  'C-100x50x20x2.3':  { Ix: 82.2, Iy: 23.2, Zx: 16.4, Zy: 6.25, A: 5.203, w: 4.08 },
-  'C-100x50x20x3.2':  { Ix: 109, Iy: 30.1, Zx: 21.8, Zy: 8.37, A: 7.077, w: 5.56 },
-  'C-125x50x20x2.3':  { Ix: 133, Iy: 26.2, Zx: 21.3, Zy: 6.81, A: 5.778, w: 4.54 },
-  'C-125x50x20x3.2':  { Ix: 178, Iy: 34.2, Zx: 28.5, Zy: 9.20, A: 7.877, w: 6.18 },
-  'C-150x75x20x3.2':  { Ix: 387, Iy: 90.9, Zx: 51.6, Zy: 16.3, A: 10.68, w: 8.38 },
-  'L-30x30x3':        { Ix: 1.13, Iy: 1.13, Zx: 0.52, Zy: 0.52, A: 1.727, w: 1.36 },
-  'L-40x40x3':        { Ix: 2.87, Iy: 2.87, Zx: 0.98, Zy: 0.98, A: 2.327, w: 1.83 },
-  'L-40x40x5':        { Ix: 4.45, Iy: 4.45, Zx: 1.58, Zy: 1.58, A: 3.755, w: 2.95 },
-  'L-50x50x4':        { Ix: 9.38, Iy: 9.38, Zx: 2.57, Zy: 2.57, A: 3.892, w: 3.06 },
-  'L-50x50x6':        { Ix: 13.3, Iy: 13.3, Zx: 3.73, Zy: 3.73, A: 5.644, w: 4.43 },
-  'L-60x60x5':        { Ix: 20.3, Iy: 20.3, Zx: 4.71, Zy: 4.71, A: 5.747, w: 4.51 },
-  'L-65x65x6':        { Ix: 33.3, Iy: 33.3, Zx: 7.11, Zy: 7.11, A: 7.527, w: 5.91 },
-  'L-75x75x6':        { Ix: 52.4, Iy: 52.4, Zx: 9.85, Zy: 9.85, A: 8.727, w: 6.85 },
-  'L-75x75x9':        { Ix: 75.2, Iy: 75.2, Zx: 14.5, Zy: 14.5, A: 12.69, w: 9.96 },
-  'L-90x90x7':        { Ix: 107, Iy: 107, Zx: 16.7, Zy: 16.7, A: 12.22, w: 9.59 },
-  'L-90x90x10':       { Ix: 147, Iy: 147, Zx: 23.6, Zy: 23.6, A: 17.00, w: 13.3 },
-  'L-100x100x7':      { Ix: 150, Iy: 150, Zx: 21.0, Zy: 21.0, A: 13.62, w: 10.7 },
-  'L-100x100x10':     { Ix: 207, Iy: 207, Zx: 29.5, Zy: 29.5, A: 19.00, w: 14.9 },
-  'L-130x130x9':      { Ix: 395, Iy: 395, Zx: 42.9, Zy: 42.9, A: 22.74, w: 17.9 },
-  'L-130x130x12':     { Ix: 516, Iy: 516, Zx: 57.0, Zy: 57.0, A: 29.76, w: 23.4 },
-  'L-150x150x12':     { Ix: 804, Iy: 804, Zx: 75.7, Zy: 75.7, A: 34.77, w: 27.3 },
-  'SP-II':   { Ix: 8740,  Zx: 874,  Iy: 0, Zy: 0, H: 100, B: 400, t: 10.5, A: 152.9, w: 120 },
-  'SP-III':  { Ix: 16800, Zx: 1340, Iy: 0, Zy: 0, H: 125, B: 400, t: 13.0, A: 191.0, w: 150 },
-  'SP-IV':   { Ix: 22700, Zx: 2270, Iy: 0, Zy: 0, H: 170, B: 400, t: 15.5, A: 242.5, w: 190 },
-  'SP-VL':   { Ix: 31500, Zx: 3150, Iy: 0, Zy: 0, H: 200, B: 500, t: 24.3, A: 267.5, w: 210 },
-  'SP-VIL':  { Ix: 38600, Zx: 3820, Iy: 0, Zy: 0, H: 225, B: 500, t: 27.6, A: 306.0, w: 240 },
-  'SP-IIw':  { Ix: 13000, Zx: 1000, Iy: 0, Zy: 0, H: 130, B: 600, t: 10.3, A: 131.2, w: 103 },
-  'SP-IIIw': { Ix: 22400, Zx: 1360, Iy: 0, Zy: 0, H: 180, B: 600, t: 13.4, A: 173.3, w: 136 },
-  'SP-IVw':  { Ix: 32400, Zx: 2160, Iy: 0, Zy: 0, H: 225, B: 600, t: 18.0, A: 202.5, w: 159 },
-  'SP-10H':  { Ix: 10800, Zx: 902,  Iy: 0, Zy: 0, H: 230, B: 900, t: 10.8, A: 122.2, w: 95.9 },
-  'SP-25H':  { Ix: 24400, Zx: 1610, Iy: 0, Zy: 0, H: 300, B: 900, t: 13.2, A: 169.6, w: 133 },
-  'LSP-1':   { Ix: 382,   Zx: 147,  Iy: 0, Zy: 0, H: 35,  B: 200, t: 3.2,  A: 61.2,  w: 48.0 }, 
-  'LSP-2':   { Ix: 644,   Zx: 208,  Iy: 0, Zy: 0, H: 40,  B: 250, t: 4.0,  A: 77.4,  w: 60.8 },
-  'Square-50x50x2.3': { Ix: 16.3, Iy: 16.3, Zx: 6.54, Zy: 6.54, A: 4.321, w: 3.39 },
-  'Square-60x60x2.3': { Ix: 28.8, Iy: 28.8, Zx: 9.61, Zy: 9.61, A: 5.241, w: 4.11 },
-  'Square-75x75x3.2': { Ix: 78.2, Iy: 78.2, Zx: 20.8, Zy: 20.8, A: 9.043, w: 7.10 },
-  'Square-100x100x3.2': { Ix: 192, Iy: 192, Zx: 38.3, Zy: 38.3, A: 12.24, w: 9.61 },
-  'Square-100x100x4.5': { Ix: 259, Iy: 259, Zx: 51.8, Zy: 51.8, A: 16.85, w: 13.2 },
-  'Square-125x125x4.5': { Ix: 518, Iy: 518, Zx: 82.9, Zy: 82.9, A: 21.35, w: 16.8 },
-  'Square-150x150x6.0': { Ix: 1270, Iy: 1270, Zx: 170, Zy: 170, A: 34.02, w: 26.7 },
-  'Square-200x200x6.0': { Ix: 3080, Iy: 3080, Zx: 308, Zy: 308, A: 46.02, w: 36.1 },
-  'Square-250x250x9.0': { Ix: 8870, Iy: 8870, Zx: 710, Zy: 710, A: 85.64, w: 67.2 },
-  'Square-300x300x12.0': { Ix: 20100, Iy: 20100, Zx: 1340, Zy: 1340, A: 135.5, w: 106 },
-};
-
-const DEFAULT_CONCRETE_STRENGTHS = [
-  { label: 'Fc18', Fc: 18, Ec: 20500 }, { label: 'Fc21', Fc: 21, Ec: 21800 },
-  { label: 'Fc24', Fc: 24, Ec: 22700 }, { label: 'Fc27', Fc: 27, Ec: 23500 },
-  { label: 'Fc30', Fc: 30, Ec: 24300 }, { label: 'Fc36', Fc: 36, Ec: 25000 },
-  { label: 'Fc40', Fc: 40, Ec: 26500 }, { label: 'Fc42', Fc: 42, Ec: 27000 },
-  { label: 'Fc45', Fc: 45, Ec: 28000 }, { label: 'Fc50', Fc: 50, Ec: 30000 },
-];
-
-const DEFAULT_HISTORY = [
-    { ver: "v21.30", date: "2026/02/08", desc: "別ウィンドウで結果を表示可能にした。" },
-    { ver: "v21.29", date: "2026/02/08", desc: "CSV出力を印刷レポート準拠の詳細形式に改修（スパンごとの最大最小、ローカル座標での詳細結果）。CSV読込時に引用符内のカンマを区切り文字として扱わないパーサーを実装し、入力データの復元精度を向上。" },
-    { ver: "v21.28", date: "2026/02/08", desc: "CSV出力機能を強化。結果詳細（全着目点）を出力し、材料入力データは選択中のタイプのみ出力するように変更。" },
-    { ver: "v21.27", date: "2026/02/08", desc: "入力データ保存機能を廃止し、結果CSV出力機能（入力データ含む）を実装。CSV読込による入力データ復元機能を追加。" },
-    { ver: "v21.26", date: "2026/02/08", desc: "荷重表等の支点表示において、各スパンごとの値を厳密に分離して表示するように修正。" },
-    { ver: "v21.25", date: "2026/02/08", desc: "ラベル配置ロジックからX方向移動（左右振り分け）を廃止。" },
-    { ver: "v21.24", date: "2026/02/08", desc: "ラベル配置ロジックの定数を最終調整。左右振り分け処理を追加。" },
-    { ver: "v21.23", date: "2026/02/08", desc: "ラベル配置をグラフ線へ接近(10-12px)させ、衝突判定を厳密化(14px)。" },
-    { ver: "v21.22", date: "2026/02/08", desc: "ラベル重なり回避ロジックを刷新（方向自動判定＋厳密重複回避）。" },
-    { ver: "v21.21", date: "2026/02/08", desc: "ラベル重なり回避ロジックを「X座標順次確定（貪欲法）」に刷新。" },
-    { ver: "v21.20", date: "2026/02/08", desc: "ラベル重なり回避ロジックを「事前計算方式」に刷新。" },
-    { ver: "v21.19", date: "2026/02/08", desc: "グラフ描画レイアウト調整（全体シフト）、ラベル重なり回避ロジックの強化。" },
-    { ver: "v21.18", date: "2026/02/08", desc: "固定端(Fixed)に作用する集中モーメント荷重を計算対象から除外(スキップ)する処理を追加。" },
-    { ver: "v21.17", date: "2026/02/05", desc: "右端単純支持における集中モーメント荷重の計算結果表示を補正。バージョン履歴機能を追加。" },
-    { ver: "v21.16", date: "2026/02/04", desc: "着目点入力の改善(PoiInput)、グラフ描画の重複回避(レイアウト拡大)、不連続点処理の強化。" },
-    { ver: "v21.15", date: "2026/01/29", "desc": "任意断面入力モードの実装、モーメント荷重への対応、断面プロファイル表示の拡充。" },
-    { ver: "v21.00", date: "2025/12/01", "desc": "UIデザインの刷新、印刷レポート機能の強化、保存/読込機能の実装。" }
-];
-
-const DEFAULT_MANUAL = [
-    {
-      title: "1. はじめに",
-      content: "本アプリケーションは、単純梁や連続梁などの構造計算（断面力・たわみ）をブラウザ上で手軽に行えるツールです。鋼材やRC断面のデータベースを内蔵し、即座に計算結果をグラフで可視化します。"
-    },
-    {
-      title: "2. 基本操作",
-      type: "list",
-      items: [
-        "<strong>断面設定:</strong> 左側のパネルで「S造」「RC造」「任意」から選択し、形状や寸法を指定します。",
-        "<strong>モデル設定:</strong> 梁タイプ（単純梁、連続梁など）を選択し、スパン長を入力します。複数スパンはカンマ区切り（例: <code>5.0, 5.0</code>）で入力可能です。",
-        "<strong>荷重入力:</strong> 「集中」「等分布」「台形」「モーメント」から種類を選び、大きさ・位置を入力して「追加」ボタンを押します。"
-      ],
-      extraHtml: "<div class='mt-2 p-3 bg-slate-50 border rounded text-xs text-slate-600'><strong>RC断面の算出式（矩形）:</strong><br/>幅 <span class='math-inline'>b</span>, 高さ <span class='math-inline'>D</span> の場合<div class='math-display text-base py-2'><span class='math-inline'>I</span> <span class='op'>=</span><div class='fraction'><span><span class='math-inline'>b</span><span class='math-inline'>D</span><span class='sup'>3</span></span><span>12</span></div><span class='op'>,</span>&nbsp;&nbsp;<span class='math-inline'>Z</span> <span class='op'>=</span><div class='fraction'><span><span class='math-inline'>b</span><span class='math-inline'>D</span><span class='sup'>2</span></span><span>6</span></div></div></div>"
-    },
-    {
-      title: "3. 荷重の種類について",
-      type: "grid",
-      items: [
-        { label: "集中荷重 (Point)", desc: "1点に作用する荷重です。下向きが正(+)です。" },
-        { label: "分布荷重 (Distributed)", desc: "一定区間に等分布で作用します。" },
-        { label: "台形荷重 (Trapezoid)", desc: "始点と終点で大きさが異なる分布荷重です。三角形状も可能です。" },
-        { label: "モーメント荷重 (Moment)", desc: "特定の点に回転モーメントを与えます。時計回りが正(+)です。" }
-      ]
-    },
-    {
-      title: "4. 機能・Tips",
-      type: "list",
-      items: [
-        "<strong>印刷機能:</strong> 右上の「印刷」ボタンから、計算書形式のレイアウトで印刷・PDF保存が可能です。",
-        "<strong>データ保存(CSV出力):</strong> 計算結果および入力データをCSVファイルとして出力・保存できます。",
-        "<strong>読込:</strong> 出力されたCSVファイルを読み込んで、計算条件を復元できます。",
-        "<strong>着目点:</strong> グラフ下の表では、最大値発生位置などが自動計算されます。「追加」ボタンで任意の位置の結果を確認することも可能です。"
-      ]
-    },
-    {
-      title: "5. 計算ロジック詳細（技術資料）",
-      type: "custom",
-      htmlContent: "<div class='space-y-4'><div><h4 class='font-bold text-slate-800 mb-2'>5.1 解析手法</h4><p>本アプリケーションでは、変位法（たわみ角法）に基づくマトリクス解析を行っています。各スパンを要素とし、節点（支点）における回転角とモーメントの釣り合い条件から連立方程式を構築し、節点モーメントを算出しています。</p></div><div><h4 class='font-bold text-slate-800 mb-2'>5.2 支配方程式（3連モーメントの定理の一般化）</h4><p>連続梁の任意の中間支点 <span class='math-inline'>n</span> における釣り合い条件は、以下の式で表されます。</p><div class='math-display'><span class='math-inline'>M</span><span class='sub'>n</span><span class='math-inline'>L</span><span class='sub'>n</span><span class='op'>+</span>2<span class='math-inline'>M</span><span class='sub'>n+1</span>(<span class='math-inline'>L</span><span class='sub'>n</span> <span class='op'>+</span> <span class='math-inline'>L</span><span class='sub'>n+1</span>)<span class='op'>+</span><span class='math-inline'>M</span><span class='sub'>n+2</span><span class='math-inline'>L</span><span class='sub'>n+1</span><span class='op'>=</span><span class='op'>-</span>6(<span class='math-inline'>&Phi;</span><span class='sub'>R,n</span> <span class='op'>+</span> <span class='math-inline'>&Phi;</span><span class='sub'>L,n+1</span>)</div><p class='text-xs text-slate-500 mt-1'>ここで、<span class='math-inline'>M</span> は節点モーメント、<span class='math-inline'>L</span> はスパン長、<span class='math-inline'>&Phi;</span> は単純梁として計算した際の支点におけるたわみ角（荷重項）を表します。</p></div><div><h4 class='font-bold text-slate-800 mb-2'>5.3 断面力および変位の算定</h4><p>算出された節点モーメント <span class='math-inline'>M</span><span class='sub'>L</span>, <span class='math-inline'>M</span><span class='sub'>R</span> を境界条件とし、各スパンごとの単純梁としての断面力（<span class='math-inline'>Q</span><span class='sub'>0</span>, <span class='math-inline'>M</span><span class='sub'>0</span>）に重ね合わせることで、任意位置 <span class='math-inline'>x</span> における最終的な値を求めています。</p><div class='math-display'><div class='mb-4'><span class='func'>M</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='math-inline'>M</span><span class='sub'>0</span>(<span class='math-inline'>x</span>) <span class='op'>+</span> <span class='math-inline'>M</span><span class='sub'>L</span> <span class='op'>+</span> <div class='fraction'><span><span class='math-inline'>x</span></span><span><span class='math-inline'>L</span></span></div>(<span class='math-inline'>M</span><span class='sub'>R</span> <span class='op'>-</span> <span class='math-inline'>M</span><span class='sub'>L</span>)</div><div><span class='func'>Q</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='math-inline'>Q</span><span class='sub'>0</span>(<span class='math-inline'>x</span>) <span class='op'>+</span> <div class='fraction'><span><span class='math-inline'>M</span><span class='sub'>R</span> <span class='op'>-</span> <span class='math-inline'>M</span><span class='sub'>L</span></span><span><span class='math-inline'>L</span></span></div></div></div><p class='mt-4 mb-2'><span class='font-bold text-slate-700'>支点反力 (Reactions):</span><br/>支点位置 <span class='math-inline'>i</span> における反力 <span class='math-inline'>R</span><span class='sub'>i</span> は、その支点を挟む左右のせん断力の差として算出されます。</p><div class='math-display'><span class='math-inline'>R</span><span class='sub'>i</span> <span class='op'>=</span> <span class='func'>Q</span>(<span class='math-inline'>x</span><span class='sub'>i</span><span class='op'>+</span>0) <span class='op'>-</span> <span class='func'>Q</span>(<span class='math-inline'>x</span><span class='sub'>i</span><span class='op'>-</span>0)</div><p class='mt-4 mb-2'><span class='font-bold text-slate-700'>たわみ (Deflection):</span><br/>たわみ曲線微分方程式を二重積分することで算出しています。</p><div class='math-display'><div class='mb-4'><div class='fraction'><span><span class='math-inline'>d</span><span class='sup'>2</span><span class='math-inline'>v</span></span><span><span class='math-inline'>dx</span><span class='sup'>2</span></span></div><span class='op'>=</span> <span class='op'>-</span><div class='fraction'><span><span class='func'>M</span>(<span class='math-inline'>x</span>)</span><span><span class='math-inline'>E</span><span class='math-inline'>I</span></span></div></div><div><span class='func'>v</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='integral'>&int;&int;</span><span class='op'>-</span><div class='fraction'><span><span class='func'>M</span>(<span class='math-inline'>x</span>)</span><span><span class='math-inline'>E</span><span class='math-inline'>I</span></span></div><span class='math-inline'>dx</span><span class='sup'>2</span><span class='op'>+</span> <span class='math-inline'>C</span><span class='sub'>1</span><span class='math-inline'>x</span> <span class='op'>+</span> <span class='math-inline'>C</span><span class='sub'>2</span></div></div></div></div>"
-    }
-];
-
 // --- 定数 ---
 const INITIAL_SPAN = "6.0";
 const RESOLUTION = 400; // 描画解像度（SVG用）
@@ -276,11 +113,16 @@ function normalizeText(text) {
 
 /**
  * 鋼材特性を取得する関数
+ * データ(db)が空の場合でもエラーにならないようガード処理を追加
  */
 function getSteelProps(shape, name, axis, db) {
-  const props = db[name];
+  // dbがundefinedの場合は空オブジェクトとして扱う
+  const safeDb = db || {};
+  const props = safeDb[name];
+  
+  // propsが見つからない場合は安全なデフォルト値を返す(NaNエラー防止)
   if (!props) {
-    return { H:0, B:0, t1:0, t2:0, I:0, Z:0, A:0, w:0, label: name + ' (Unk)' };
+    return { H:0, B:0, t1:0, t2:0, I:1, Z:1, A:0, w:0, label: (name || '未選択') + ' (No Data)' };
   }
 
   // 寸法情報の取得（描画用）
@@ -313,9 +155,12 @@ function getSteelProps(shape, name, axis, db) {
 }
 
 // ==========================================
-// [NEW COMPONENT] Help Modal / User Manual
+// Help Modal / User Manual
 // ==========================================
 function HelpModal({ onClose, manualData }) {
+    // manualDataが空の場合のフォールバック
+    const sections = manualData || [];
+    
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
@@ -329,7 +174,8 @@ function HelpModal({ onClose, manualData }) {
                     </button>
                 </div>
                 <div className="p-6 overflow-y-auto text-sm text-slate-700 leading-relaxed space-y-6">
-                    {manualData.map((section, idx) => (
+                    {sections.length === 0 && <p className="text-center text-slate-400">マニュアルデータを読み込めませんでした。</p>}
+                    {sections.map((section, idx) => (
                         <section key={idx}>
                             <h3 className="font-bold text-slate-900 border-l-4 border-blue-500 pl-2 mb-2">{section.title}</h3>
                             {section.content && <p>{section.content}</p>}
@@ -372,9 +218,11 @@ function HelpModal({ onClose, manualData }) {
 }
 
 // ==========================================
-// [NEW COMPONENT] Version History Modal
+// Version History Modal
 // ==========================================
 function VersionHistoryModal({ onClose, historyData }) {
+    const history = historyData || [];
+    
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
@@ -397,7 +245,8 @@ function VersionHistoryModal({ onClose, historyData }) {
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {historyData.map((h, i) => (
+                            {history.length === 0 && <tr><td colSpan="3" className="p-4 text-center text-slate-400">履歴データなし</td></tr>}
+                            {history.map((h, i) => (
                                 <tr key={i} className="hover:bg-slate-50">
                                     <td className="p-3 font-mono font-bold text-blue-600 align-top">{h.ver}</td>
                                     <td className="p-3 text-slate-500 text-xs align-top whitespace-nowrap">{h.date}</td>
@@ -415,8 +264,7 @@ function VersionHistoryModal({ onClose, historyData }) {
     );
 }
 
-// ... (PoiInput, ResultWindow, ResultContent components remain unchanged) ...
-// ★[NEW] PoiInput Component
+// PoiInput Component
 function PoiInput({ id, globalX, rangeStart, onUpdate }) {
     const localVal = Math.max(0, globalX - rangeStart);
     const [val, setVal] = useState(localVal.toFixed(3));
@@ -521,11 +369,12 @@ function ResultContent({ results, sectionProps, loads, spans, supports, totalLen
 }
   
 function App() {
-  // --- States for External Data ---
-  const [steelDB, setSteelDB] = useState(DEFAULT_STEEL_DB);
-  const [concreteStrengths, setConcreteStrengths] = useState(DEFAULT_CONCRETE_STRENGTHS);
-  const [historyData, setHistoryData] = useState(DEFAULT_HISTORY);
-  const [manualData, setManualData] = useState(DEFAULT_MANUAL);
+  // --- External Data States (Empty by default) ---
+  const [steelDB, setSteelDB] = useState({});
+  const [concreteStrengths, setConcreteStrengths] = useState([]);
+  const [historyData, setHistoryData] = useState([]);
+  const [manualData, setManualData] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // --- Fetch Data on Mount ---
   useEffect(() => {
@@ -538,8 +387,10 @@ function App() {
                 if (data.concrete_strengths) setConcreteStrengths(data.concrete_strengths);
                 if (data.history) setHistoryData(data.history);
                 if (data.manual) setManualData(data.manual);
+                setDataLoaded(true);
             } else {
-                console.warn('data.json not found, using default data.');
+                console.warn('data.json not found. App running in empty data mode.');
+                // データがなくてもアプリは動くが、リストは空になる
             }
         } catch (error) {
             console.error('Failed to load data.json', error);
@@ -549,19 +400,23 @@ function App() {
   }, []);
 
   // --- Derived State for Steel Lists ---
+  // データが空の場合でも、空配列として各カテゴリを定義しておく
   const STEEL_LISTS = useMemo(() => {
-      const db = steelDB;
+      const db = steelDB || {};
       const keys = Object.keys(db);
+      // 安全なフィルタリング
+      const filterKeys = (predicate) => keys.length > 0 ? keys.filter(predicate) : [];
+      
       return {
-        H: keys.filter(k => k.startsWith('H')),
-        Channel: keys.filter(k => k.startsWith('C') && !k.includes('x1.6') && !k.includes('x2.3') && !k.includes('x3.2')),
-        LipChannel: keys.filter(k => k.startsWith('C') && (k.includes('x1.6') || k.includes('x2.3') || k.includes('x3.2'))),
-        Angle: keys.filter(k => k.startsWith('L') && !k.startsWith('LSP')),
-        SheetPile: ['SP-II', 'SP-III', 'SP-IV', 'SP-VL', 'SP-VIL'],
-        SheetPileW: ['SP-IIw', 'SP-IIIw', 'SP-IVw'],
-        SheetPileH: ['SP-10H', 'SP-25H'],
-        LightSheetPile: ['LSP-1', 'LSP-2'],
-        SquarePipe: keys.filter(k => k.startsWith('Square')),
+        H: filterKeys(k => k.startsWith('H')),
+        Channel: filterKeys(k => k.startsWith('C') && !k.includes('x1.6') && !k.includes('x2.3') && !k.includes('x3.2')),
+        LipChannel: filterKeys(k => k.startsWith('C') && (k.includes('x1.6') || k.includes('x2.3') || k.includes('x3.2'))),
+        Angle: filterKeys(k => k.startsWith('L') && !k.startsWith('LSP')),
+        SheetPile: ['SP-II', 'SP-III', 'SP-IV', 'SP-VL', 'SP-VIL'].filter(k => db[k]), // DBに存在するかチェック
+        SheetPileW: ['SP-IIw', 'SP-IIIw', 'SP-IVw'].filter(k => db[k]),
+        SheetPileH: ['SP-10H', 'SP-25H'].filter(k => db[k]),
+        LightSheetPile: ['LSP-1', 'LSP-2'].filter(k => db[k]),
+        SquarePipe: filterKeys(k => k.startsWith('Square')),
       };
   }, [steelDB]);
 
@@ -573,13 +428,13 @@ function App() {
   const [showHistory, setShowHistory] = useState(false); // Version History Modal State
   const [showResultWindow, setShowResultWindow] = useState(false);
     
-  // ★[MODIFIED] matType: steel | concrete | manual
+  // matType: steel | concrete | manual
   const [matType, setMatType] = useState('steel');
   const [steelShape, setSteelShape] = useState('H');
-  const [steelProfileIdx, setSteelProfileIdx] = useState(9); 
+  const [steelProfileIdx, setSteelProfileIdx] = useState(9); // Default index
   const [steelAxis, setSteelAxis] = useState('strong');
     
-  // New: Manual Input States
+  // Manual Input States
   const [manualI, setManualI] = useState("1000"); // cm4
   const [manualZ, setManualZ] = useState("100");  // cm3
   const [manualA, setManualA] = useState("30.0"); // cm2
@@ -640,7 +495,7 @@ function App() {
   const sectionProps = useMemo(() => {
     let E = 0, I = 0, Z = 0, label = '', dims = {}, A = 0, w = 0;
     
-    // ★[MODIFIED] Manual Mode Logic
+    // Manual Mode Logic
     if (matType === 'manual') {
         const iVal = parseFloat(manualI);
         const zVal = parseFloat(manualZ);
@@ -652,14 +507,16 @@ function App() {
         A = (isNaN(aVal) ? 0 : aVal);         // cm2
         E = (isNaN(eVal) ? 0 : eVal) * 1000;  // kN/mm2 -> N/mm2
 
-        w = A * 0.785; // Default assumption for weight calc (Steel approx)
+        w = A * 0.785; 
         label = `任意断面 (I=${manualI}, Z=${manualZ})`;
         dims = { type: 'manual' }; 
     
     } else if (matType === 'steel') {
       E = E_STEEL; 
-      const list = STEEL_LISTS[steelShape];
-      const name = list && list[steelProfileIdx] ? list[steelProfileIdx] : (list ? list[0] : '');
+      const list = STEEL_LISTS[steelShape] || [];
+      // リストが空、またはインデックス外の場合は安全に処理
+      const name = list.length > 0 && list[steelProfileIdx] ? list[steelProfileIdx] : (list.length > 0 ? list[0] : '');
+      
       // Pass current DB state to helper
       const props = getSteelProps(steelShape, name, steelAxis, steelDB);
       dims = props;
@@ -676,17 +533,20 @@ function App() {
           Z = props.Z * safeEffZ * safeWL;
           A = props.A * safeWL;
           w = props.w * safeWL;
-          label = `${name} (L=${safeWL}m)`;
+          label = `${name || 'No Data'} (L=${safeWL}m)`;
       } else {
           I = props.I; 
           Z = props.Z;
           A = props.A;
           w = props.w;
-          label = `${name} (${steelAxis === 'strong' ? '強軸' : '弱軸'})`;
+          label = `${name || 'No Data'} (${steelAxis === 'strong' ? '強軸' : '弱軸'})`;
       }
 
     } else {
-      const fcData = concreteStrengths[rcFcIdx];
+      // コンクリート強度DBが空の場合のガード
+      const safeStrengths = concreteStrengths.length > 0 ? concreteStrengths : [{ label: 'Unk', Fc: 0, Ec: 20000 }];
+      const fcData = safeStrengths[rcFcIdx] || safeStrengths[0];
+      
       const b = parseFloat(rcWidthStr) || 0;
       const D = parseFloat(rcDepthStr) || 0;
       E = fcData.Ec; I = (b * Math.pow(D, 3)) / 12; Z = (b * Math.pow(D, 2)) / 6; 
@@ -1043,7 +903,13 @@ function App() {
                 
                 {matType === 'concrete' && (
                 <div className="space-y-4">
-                    <div><label className="text-xs text-slate-500 font-bold block mb-1">コンクリート</label><select value={rcFcIdx} onChange={e => setRcFcIdx(Number(e.target.value))} className="w-full p-2 border rounded text-sm">{concreteStrengths.map((fc, idx) => <option key={idx} value={idx}>{fc.label}</option>)}</select></div>
+                    <div><label className="text-xs text-slate-500 font-bold block mb-1">コンクリート</label><select value={rcFcIdx} onChange={e => setRcFcIdx(Number(e.target.value))} className="w-full p-2 border rounded text-sm">
+                        {concreteStrengths.length > 0 ? (
+                            concreteStrengths.map((fc, idx) => <option key={idx} value={idx}>{fc.label}</option>)
+                        ) : (
+                            <option value="0">Loading...</option>
+                        )}
+                    </select></div>
                     <div className="grid grid-cols-2 gap-3">
                     <div><label className="text-xs text-slate-500 font-bold block mb-1">幅 b</label><input type="number" value={rcWidthStr} onChange={e=>setRcWidthStr(e.target.value)} className="w-full p-2 border rounded text-sm"/></div>
                     <div><label className="text-xs text-slate-500 font-bold block mb-1">高さ D</label><input type="number" value={rcDepthStr} onChange={e=>setRcDepthStr(e.target.value)} className="w-full p-2 border rounded text-sm"/></div>
@@ -1732,209 +1598,6 @@ function SectionProfileView({ props }) {
     else if (shape === 'SquarePipe') { const dH = H, dB = B, dt = t1; pathD = `M ${cx-dB/2} ${cy-dH/2} h ${dB} v ${dH} h ${-dB} z M ${cx-(dB-2*dt)/2} ${cy-(dH-2*dt)/2} v ${dH-2*dt} h ${dB-2*dt} v ${-(dH-2*dt)} z`; }
   }
   return <svg width="100%" height="100%" viewBox="0 0 100 100"><path d={pathD} fill="#cbd5e1" stroke="#475569" strokeWidth="1.5" fillRule="evenodd" transform={axis === 'weak' ? `rotate(90, ${cx}, ${cy})` : ''} /></svg>;
-}
-
-function ResultBox({ label, val, x, unit, sub, color }) {
-  return (
-    <div className="bg-white p-3 rounded-lg border shadow-sm">
-      <div className="text-[10px] text-slate-400 uppercase font-bold">{label}</div>
-      <div className={`text-lg font-bold ${color}`}>{val?.toFixed(2)} <span className="text-xs text-slate-400">{unit}</span></div>
-      <div className="flex gap-2 text-[10px]">
-        {x !== undefined && <span className="bg-slate-100 px-1 rounded inline-block text-slate-500">x={x.toFixed(3)}m</span>}
-        {sub && <span className="bg-slate-100 px-1 rounded inline-block text-slate-500">{sub}</span>}
-      </div>
-    </div>
-  );
-}
-
-function PoiTable({ finalPoiData, userPoi, setUserPoi, totalLength, spans, results, sectionProps }) {
-  const addUserPoint = (globalX) => { const newId = Date.now(); setUserPoi([...userPoi, { id: newId, x: globalX }]); };
-  const updateUserPoint = (id, newGlobalX) => { setUserPoi(userPoi.map(p => p.id === id ? { ...p, x: newGlobalX } : p)); };
-  const removeUserPoint = (id) => { setUserPoi(userPoi.filter(p => p.id !== id)); };
-  const spanRanges = useMemo(() => { let currentX = 0; return spans.map(len => { const range = { start: currentX, end: currentX + len }; currentX += len; return range; }); }, [spans]);
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center mb-2"><h3 className="text-sm font-bold text-slate-600">着目点詳細 (スパン別)</h3></div>
-      {spanRanges.map((range, sIdx) => {
-        const spanPoints = finalPoiData.filter(p => p.x >= range.start - 1e-4 && p.x <= range.end + 1e-4);
-        return (
-          <div key={sIdx} className="border rounded-lg overflow-hidden bg-white shadow-sm">
-            <div className="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 flex justify-between items-center">
-                <span>径間 {sIdx + 1} ({String.fromCharCode(65+sIdx)} - {String.fromCharCode(65+sIdx+1)})</span>
-                <div className="flex items-center gap-3">
-                    <span className="font-normal opacity-70">スパン長: {spans[sIdx].toFixed(2)}m</span>
-                    <button onClick={() => addUserPoint(range.start)} className="flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"><Plus className="w-3 h-3"/> 追加</button>
-                </div>
-            </div>
-            <table className="w-full text-[11px] text-left">
-              <thead className="bg-slate-50 text-slate-400 border-b"><tr><th className="p-2 w-24">Local x (m)</th><th className="p-2">Q (kN)</th><th className="p-2">M (kN·m)</th><th className="p-2">σ (N/mm²)</th><th className="p-2">δ (mm)</th><th className="w-8"></th></tr></thead>
-              <tbody className="divide-y">
-                {spanPoints.map((p, idx) => {
-                  const localX = Math.max(0, Math.min(spans[sIdx], p.x - range.start));
-                  const isUser = p.type === 'user';
-                  const val = getResultAt(p.x, results, sectionProps, sIdx);
-                  return (
-                    <tr key={p.id} className={isUser ? "bg-blue-50/20" : "hover:bg-slate-50"}>
-                      <td className="p-2"><div className="flex items-center gap-1">{isUser ? (<PoiInput id={p.id} globalX={p.x} rangeStart={range.start} onUpdate={updateUserPoint} />) : (<div className="flex items-center gap-2"><span className="font-mono text-slate-500 w-12">{localX.toFixed(3)}</span><span className="text-[9px] px-1 bg-slate-200 rounded text-slate-500">Auto</span></div>)}{isUser && <span className="text-[9px] text-slate-300">m</span>}</div></td>
-                      <td className="p-2 font-mono text-slate-600">{val?.Q?.toFixed(2)}</td>
-                      <td className="p-2 font-mono text-slate-600">{val?.M?.toFixed(2)}</td>
-                      <td className="p-2 font-mono text-slate-700">{val?.sigma?.toFixed(1)}</td>
-                      <td className="p-2 font-mono text-blue-600 font-bold">{val?.deflection?.toFixed(2)}</td>
-                      <td className="p-2 text-right">{isUser && (<button onClick={() => removeUserPoint(p.id)}><X className="w-3 h-3 text-slate-300 hover:text-red-500" /></button>)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function AdvancedVisualizer({ spans, supports, totalLength, loads, results, forceWidth }) {
-  const containerRef = useRef(null);
-  const [width, setWidth] = useState(forceWidth || 600);
-  useEffect(() => {
-    if (forceWidth) { setWidth(forceWidth); return; }
-    if(containerRef.current) setWidth(containerRef.current.clientWidth);
-    const h = () => { if(containerRef.current) setWidth(containerRef.current.clientWidth); };
-    window.addEventListener('resize', h); return () => window.removeEventListener('resize', h);
-  }, [forceWidth]);
-  const height = 950, padding = { left: 50, right: 50, top: 40 };
-  const scaleX = (v) => padding.left + (v / totalLength) * (width - padding.left - padding.right);
-  const beamY = 120; const sfdY = 360; const bmdY = 610; const defY = 860; const graphH = 70;
-  const { maxShear, maxM_pos, maxM_neg, maxDeflection } = results.bounds;
-  const maxM = Math.max(Math.abs(maxM_pos), Math.abs(maxM_neg), 1), maxD = Math.max(Math.abs(maxDeflection), 0.1), maxQ = Math.max(Math.abs(maxShear), 1);
-  const syQ = v => sfdY - (v/maxQ)*(graphH/2), syM = v => bmdY + (v/maxM)*(graphH/2), syD = v => defY + (v/maxD)*(graphH/2);
-  const maxLoadMag = Math.max(...loads.map(l => Math.max(Math.abs(l.mag), Math.abs(l.magEnd || 0))), 1);
-  const loadHScale = 40 / maxLoadMag;
-  const calculateLabelLayout = (rawPoints, baseY) => {
-      let sorted = [...rawPoints].sort((a, b) => a.x - b.x);
-      const placedRects = []; const results = [];
-      const boxW = 120; const boxH = 16;
-      sorted.forEach(p => {
-          const originY = p.y;
-          const isVisuallyBelow = originY > baseY + 1; const isVisuallyAbove = originY < baseY - 1; 
-          let goUp; if (isVisuallyBelow) goUp = false; else if (isVisuallyAbove) goUp = true; else goUp = true;
-          const offsetUp = 10; const offsetDown = 12; 
-          let candY = originY + (goUp ? -offsetUp : offsetDown);
-          const shiftStep = goUp ? -17 : 17; 
-          for (let k = 0; k < 15; k++) { 
-              let collision = false;
-              for (const r of placedRects) {
-                  const dx = Math.abs(p.x - r.x); const dy = Math.abs(candY - r.y);
-                  if (dx < boxW && dy < boxH) { collision = true; break; }
-              }
-              if (!collision) break; candY += shiftStep;
-          }
-          placedRects.push({ x: p.x, y: candY }); 
-          const showLine = Math.abs(candY - originY) > 25;
-          results.push({ ...p, finalY: candY, originY, showLine });
-      });
-      return results;
-  };
-  const collectPoints = (dataArr, boundsArr, scaleYFunc, type) => {
-      const points = []; if (!dataArr || dataArr.length === 0) return [];
-      let startP = dataArr[0]; for(let i=0; i<dataArr.length; i++) { if(dataArr[i].x > 0.0001) break; if(Math.abs(dataArr[i].y) > Math.abs(startP.y)) startP = dataArr[i]; } points.push({ xVal: startP.x, val: startP.y });
-      let endP = dataArr[dataArr.length-1]; const L = dataArr[dataArr.length-1].x; for(let i=dataArr.length-1; i>=0; i--) { if(dataArr[i].x < L - 0.0001) break; if(Math.abs(dataArr[i].y) > Math.abs(endP.y)) endP = dataArr[i]; } points.push({ xVal: endP.x, val: endP.y });
-      boundsArr.forEach(sb => {
-          if (type === 'M') {
-              if (Math.abs(sb.maxM_x - sb.minM_x) < 0.001) { const val = Math.abs(sb.maxM) >= Math.abs(sb.minM) ? sb.maxM : sb.minM; const x = Math.abs(sb.maxM) >= Math.abs(sb.minM) ? sb.maxM_x : sb.minM_x; points.push({ xVal: x, val: val });
-              } else { points.push({ xVal: sb.maxM_x, val: sb.maxM }); points.push({ xVal: sb.minM_x, val: sb.minM }); }
-          } else if (type === 'Q') { points.push({ xVal: sb.maxQ_x, val: sb.maxQ }); points.push({ xVal: sb.minQ_x, val: sb.minQ });
-          } else { points.push({ xVal: sb.maxD_x, val: sb.maxD }); points.push({ xVal: sb.minD_x, val: sb.minD }); }
-      });
-      const uniquePoints = [];
-      points.forEach(p => { const exists = uniquePoints.some(ep => Math.abs(ep.xVal - p.xVal) < 0.001 && Math.abs(ep.val - p.val) < 0.01); if (!exists) { uniquePoints.push({ x: scaleX(p.xVal), y: scaleYFunc(p.val), val: p.val, xVal: p.xVal, unit: type === 'M' ? 'kN·m' : (type === 'Q' ? 'kN' : 'mm') }); } });
-      return uniquePoints;
-  };
-  const sfdPoints = collectPoints(results.shearData, results.spanBounds, syQ, 'Q'); const sfdLabels = calculateLabelLayout(sfdPoints, sfdY); 
-  const bmdPoints = collectPoints(results.momentData, results.spanBounds, syM, 'M'); const bmdLabels = calculateLabelLayout(bmdPoints, bmdY); 
-  const defPoints = collectPoints(results.deflectionData, results.spanBounds, syD, 'D'); const defLabels = calculateLabelLayout(defPoints, defY); 
-  const loadTextOccupied = useRef([]); loadTextOccupied.current = [];
-  const getAdjustedLoadTextY = (x, yBase, isBottom) => {
-      let y = yBase, shift = isBottom ? 13 : -13;
-      for(let i=0; i<5; i++) {
-         let collision = false; for (let l of loadTextOccupied.current) if (Math.abs(x - l.x) < 40 && Math.abs(y - l.y) < 12) { collision = true; break; }
-         if (!collision) break; y += shift; 
-      }
-      loadTextOccupied.current.push({ x, y }); return y;
-  };
-  return (
-    <div ref={containerRef} className="w-full select-none">
-      <svg width={width} height={height} className="overflow-visible">
-        <defs><marker id="arrow" markerWidth="8" markerHeight="5" refX="7.5" refY="2.5" orient="auto"><polygon points="0 0, 8 2.5, 0 5" fill={COLORS.load} /></marker></defs>
-        <g key={`${totalLength}-${spans.join('-')}`}>
-          {(() => {
-            const guidePoints = new Set([0, totalLength]); let cx = 0; spans.forEach(s => { cx += s; guidePoints.add(cx); }); loads.forEach(l => { guidePoints.add(l.pos); if(l.type !== 'point') guidePoints.add(l.pos + l.length); });
-            return Array.from(guidePoints).map((gx, i) => <line key={i} x1={scaleX(gx)} y1={beamY+20} x2={scaleX(gx)} y2={height-20} stroke={COLORS.guide} strokeWidth="0.5" strokeDasharray="3" opacity="0.3" />);
-          })()}
-          {spans.map((len, i) => {
-             let sx_val = 0; for(let k=0; k<i; k++) sx_val += spans[k]; const x1 = scaleX(sx_val), x2 = scaleX(sx_val + len);
-             return ( <g key={`dim-span-${i}`}><text x={(x1+x2)/2} y={beamY + 45} textAnchor="middle" fontSize="10" fill={COLORS.dim}>{len}m</text><line x1={x1} y1={beamY + 35} x2={x2} y2={beamY + 35} stroke={COLORS.dim} strokeWidth="0.8" /><line x1={x1} y1={beamY + 32} x2={x1} y2={beamY + 38} stroke={COLORS.dim} strokeWidth="0.8" /><line x1={x2} y1={beamY + 32} x2={x2} y2={beamY + 38} stroke={COLORS.dim} strokeWidth="0.8" /></g> );
-          })}
-          <line x1={scaleX(0)} y1={beamY} x2={scaleX(totalLength)} y2={beamY} stroke={COLORS.beam} strokeWidth="4" />
-          {supports.map((type, i) => {
-            let cx = 0; for(let k=0;k<i;k++) cx += (k<spans.length?spans[k]:0); const x = scaleX(cx); if (type === 'free') return null;
-            let icon = (type === 'fixed') ? <line x1={x} y1={beamY-15} x2={x} y2={beamY+15} stroke={COLORS.support} strokeWidth="6"/> : (type === 'pin') ? <polygon points={`${x},${beamY} ${x-6},${beamY+10} ${x+6},${beamY+10}`} fill="none" stroke={COLORS.support} strokeWidth="2"/> : <g><polygon points={`${x},${beamY} ${x-6},${beamY+10} ${x+6},${beamY+10}`} fill="none" stroke={COLORS.support} strokeWidth="2"/><line x1={x-8} y1={beamY+13} x2={x+8} y2={beamY+13} stroke={COLORS.support} strokeWidth="1"/></g>;
-            return <g key={`supp-label-${i}`}>{icon}<text x={x} y={beamY + 25} textAnchor="middle" fontSize="11" fontWeight="bold" fill={COLORS.support}>{String.fromCharCode(65 + i)}</text></g>;
-          })}
-          {(() => {
-            const posStack = {}, negStack = {};
-            return [...loads].sort((a, b) => a.pos - b.pos).map(l => {
-                const isNeg = l.mag < 0, stack = isNeg ? negStack : posStack, key = Math.round(l.pos * 10), count = stack[key] || 0; stack[key] = count + 1;
-                const shift = count * 30, x = scaleX(l.pos); const pointOffset = (l.type === 'point') ? 20 : 0;
-                const h1 = Math.abs(l.mag) * loadHScale + pointOffset; const currentBeamY = isNeg ? (beamY + shift) : (beamY - shift);
-                const baseY = isNeg ? (currentBeamY + h1 + 15) : (currentBeamY - h1 - 5), textY = getAdjustedLoadTextY(x, baseY, isNeg), posTextY = isNeg ? (textY + 12) : (textY - 12);
-                if(l.type==='point') {
-                   const yS = isNeg ? currentBeamY + h1 : currentBeamY - h1, yE = isNeg ? currentBeamY + 5 : currentBeamY - 5;
-                   return <g key={l.id}>{shift > 0 && <line x1={x} y1={currentBeamY} x2={x} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" />}<line x1={x} y1={yS} x2={x} y2={yE} stroke={COLORS.load} strokeWidth="2" markerEnd="url(#arrow)"/><text x={x} y={textY} textAnchor="middle" fontSize="10" fill={COLORS.load} fontWeight="bold">{l.mag}kN</text><text x={x} y={posTextY} textAnchor="middle" fontSize="9" fill={COLORS.dim}>x={l.pos}m</text></g>;
-                } else if (l.type === 'moment') {
-                   const yCenter = currentBeamY - 20; const r = 16; const isCW = l.mag > 0;
-                   return <g key={l.id}>{shift > 0 && <line x1={x} y1={currentBeamY} x2={x} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" />}<circle cx={x} cy={yCenter} r="2" fill={COLORS.load} /><path d={isCW ? `M ${x} ${yCenter-r} A ${r} ${r} 0 1 1 ${x-r} ${yCenter}` : `M ${x} ${yCenter-r} A ${r} ${r} 0 1 0 ${x+r} ${yCenter}`} fill="none" stroke={COLORS.load} strokeWidth="2.5" /><path d={isCW ? `M ${x-r} ${yCenter-6} L ${x-r-5} ${yCenter+4} L ${x-r+5} ${yCenter+4} Z` : `M ${x+r} ${yCenter-6} L ${x+r-5} ${yCenter+4} L ${x+r+5} ${yCenter+4} Z` } fill={COLORS.load} /><text x={x} y={yCenter - r - 8} textAnchor="middle" fontSize="10" fill={COLORS.load} fontWeight="bold">{l.mag}kN·m</text><text x={x} y={posTextY} textAnchor="middle" fontSize="9" fill={COLORS.dim}>x={l.pos}m</text></g>;
-                } else {
-                   const x2 = scaleX(l.pos + l.length), mag2 = l.type === 'trapezoid' ? l.magEnd : l.mag, h2 = Math.abs(mag2) * loadHScale, y1P = isNeg ? currentBeamY + h1 : currentBeamY - h1, y2P = mag2 < 0 ? currentBeamY + h2 : currentBeamY - h2;
-                   if ((l.mag > 0 && mag2 < 0) || (l.mag < 0 && mag2 > 0)) {
-                      const ratio = Math.abs(l.mag) / (Math.abs(l.mag) + Math.abs(mag2)); const xMid = x + (x2 - x) * ratio;
-                      return ( <g key={l.id}>{shift > 0 && <g><line x1={x} y1={currentBeamY} x2={x} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" /><line x1={x2} y1={currentBeamY} x2={x2} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" /></g>}<polygon points={`${x},${currentBeamY} ${x},${y1P} ${xMid},${currentBeamY}`} fill={COLORS.loadPolygon} /><polygon points={`${xMid},${currentBeamY} ${x2},${y2P} ${x2},${currentBeamY}`} fill={COLORS.loadPolygon} /><line x1={x} y1={y1P} x2={xMid} y2={currentBeamY} stroke={COLORS.load} strokeWidth="1.5"/><line x1={xMid} y1={currentBeamY} x2={x2} y2={y2P} stroke={COLORS.load} strokeWidth="1.5"/><text x={x} y={textY} textAnchor="end" fontSize="10" fill={COLORS.load} fontWeight="bold">{l.mag}kN/m</text><text x={x2} y={getAdjustedLoadTextY(x2, (mag2 < 0 ? currentBeamY + h2 + 15 : currentBeamY - h2 - 5), mag2 < 0)} textAnchor="start" fontSize="10" fill={COLORS.load} fontWeight="bold">{mag2}kN/m</text></g> );
-                   }
-                   return <g key={l.id}>{shift > 0 && <g><line x1={x} y1={currentBeamY} x2={x} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" /><line x1={x2} y1={currentBeamY} x2={x2} y2={beamY} stroke={COLORS.load} strokeWidth="1" strokeDasharray="2" opacity="0.5" /></g>}<polygon points={`${x},${currentBeamY} ${x},${y1P} ${x2},${y2P} ${x2},${currentBeamY}`} fill={COLORS.loadPolygon} /><line x1={x} y1={y1P} x2={x2} y2={y2P} stroke={COLORS.load} strokeWidth="1.5"/><text x={x} y={textY} textAnchor="end" fontSize="10" fill={COLORS.load} fontWeight="bold">{l.mag}kN/m</text><text x={x2} y={getAdjustedLoadTextY(x2, (mag2 < 0 ? currentBeamY + h2 + 15 : currentBeamY - h2 - 5), mag2 < 0)} textAnchor="start" fontSize="10" fill={COLORS.load} fontWeight="bold">{mag2}kN/m</text><text x={(x+x2)/2} y={posTextY} textAnchor="middle" fontSize="9" fill={COLORS.dim}>x={l.pos}~{(l.pos+l.length).toFixed(1)}m</text></g>;
-                }
-            });
-          })()}
-          <g>
-            <text x={10} y={sfdY - 75} fontSize="10" fontWeight="bold" fill={COLORS.shearLine}>せん断力図 (SFD) [kN]</text>
-            <line x1={scaleX(0)} y1={sfdY} x2={scaleX(totalLength)} y2={sfdY} stroke="#cbd5e1" strokeDasharray="2"/>
-            <path d={`M ${scaleX(0)} ${sfdY} ` + results.shearData.map(p=>`L ${scaleX(p.x)} ${syQ(p.y)}`).join(' ') + ` L ${scaleX(totalLength)} ${sfdY}`} fill={COLORS.shearFill} opacity="0.6"/><path d={`M ${scaleX(0)} ${syQ(results.shearData[0]?.y||0)} ` + results.shearData.map(p=>`L ${scaleX(p.x)} ${syQ(p.y)}`).join(' ')} fill="none" stroke={COLORS.shearLine} strokeWidth="1.5"/>
-            {sfdLabels.map((lbl, i) => {
-                const anchor = (lbl.x < padding.left + 40) ? "start" : (lbl.x > width - padding.right - 40) ? "end" : "middle";
-                return ( <g key={i}>{lbl.showLine && <line x1={lbl.x} y1={lbl.originY} x2={lbl.x} y2={lbl.finalY + (lbl.val>=0?5:-5)} stroke={COLORS.shearLine} strokeWidth="0.5" opacity="0.5" />}<text x={lbl.x} y={lbl.finalY} textAnchor={anchor} fontSize="10" fill={COLORS.shearLine} fontWeight="bold">{lbl.val > 0 ? '+' : ''}{lbl.val.toFixed(2)}{lbl.unit} <tspan fontSize="9" fill={COLORS.dim} dx="4">(x={lbl.xVal.toFixed(3)}m)</tspan></text><circle cx={lbl.x} cy={lbl.originY} r="2" fill={COLORS.shearLine} /></g> );
-            })}
-          </g>
-          <g>
-            <text x={10} y={bmdY - 75} fontSize="10" fontWeight="bold" fill={COLORS.momentLine}>曲げモーメント図 (BMD) [kN·m]</text>
-            <line x1={scaleX(0)} y1={bmdY} x2={scaleX(totalLength)} y2={bmdY} stroke="#cbd5e1" strokeDasharray="2"/>
-            <path d={`M ${scaleX(0)} ${bmdY} ` + results.momentData.map(p=>`L ${scaleX(p.x)} ${syM(p.y)}`).join(' ') + ` L ${scaleX(totalLength)} ${bmdY}`} fill={COLORS.momentFill} opacity="0.6"/><path d={`M ${scaleX(0)} ${syM(results.momentData[0]?.y||0)} ` + results.momentData.map(p=>`L ${scaleX(p.x)} ${syM(p.y)}`).join(' ')} fill="none" stroke={COLORS.momentLine} strokeWidth="1.5"/>
-            {bmdLabels.map((lbl, i) => {
-                const anchor = (lbl.x < padding.left + 40) ? "start" : (lbl.x > width - padding.right - 40) ? "end" : "middle";
-                return ( <g key={i}>{lbl.showLine && <line x1={lbl.x} y1={lbl.originY} x2={lbl.x} y2={lbl.finalY + (lbl.val>=0?5:-5)} stroke={COLORS.momentLine} strokeWidth="0.5" opacity="0.5" />}<text x={lbl.x} y={lbl.finalY} textAnchor={anchor} fontSize="10" fill={COLORS.momentLine} fontWeight="bold">{lbl.val > 0 ? '+' : ''}{lbl.val.toFixed(2)}{lbl.unit} <tspan fontSize="9" fill={COLORS.dim} dx="4">(x={lbl.xVal.toFixed(3)}m)</tspan></text><circle cx={lbl.x} cy={lbl.originY} r="2" fill={COLORS.momentLine} /></g> );
-            })}
-          </g>
-          <g>
-            <text x={10} y={defY - 75} fontSize="10" fontWeight="bold" fill={COLORS.deflLine}>変位図 (たわみ) [mm]</text>
-            <line x1={scaleX(0)} y1={defY} x2={scaleX(totalLength)} y2={defY} stroke="#cbd5e1" strokeDasharray="2"/>
-            <path d={`M ${scaleX(0)} ${defY} ` + results.deflectionData.map(p=>`L ${scaleX(p.x)} ${syD(p.y)}`).join(' ') + ` L ${scaleX(totalLength)} ${defY}`} fill={COLORS.deflFill} opacity="0.4"/><path d={`M ${scaleX(0)} ${syD(results.deflectionData[0]?.y||0)} ` + results.deflectionData.map(p=>`L ${scaleX(p.x)} ${syD(p.y)}`).join(' ')} fill="none" stroke={COLORS.deflLine} strokeWidth="1.5"/>
-            {defLabels.map((lbl, i) => {
-                const anchor = (lbl.x < padding.left + 40) ? "start" : (lbl.x > width - padding.right - 40) ? "end" : "middle";
-                return ( <g key={i}>{lbl.showLine && <line x1={lbl.x} y1={lbl.originY} x2={lbl.x} y2={lbl.finalY + (lbl.val>=0?5:-5)} stroke={COLORS.deflLine} strokeWidth="0.5" opacity="0.5" />}<text x={lbl.x} y={lbl.finalY} textAnchor={anchor} fontSize="10" fill={COLORS.deflLine} fontWeight="bold">{lbl.val > 0 ? '+' : ''}{lbl.val.toFixed(2)}{lbl.unit} <tspan fontSize="9" fill={COLORS.dim} dx="4">(x={lbl.xVal.toFixed(3)}m)</tspan></text><circle cx={lbl.x} cy={lbl.originY} r="2" fill={COLORS.deflLine} /></g> );
-            })}
-          </g>
-        </g>
-      </svg>
-    </div>
-  );
 }
 
 // Reactアプリのマウント
