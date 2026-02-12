@@ -4,7 +4,7 @@
  */
 
 export const INITIAL_SPAN = "6.0";
-export const RESOLUTION = 400; // 描画解像度（SVG用）
+export const RESOLUTION = 400; // 描画解像度
 export const E_STEEL = 205000; // N/mm2
 export const EPS = 1e-9; 
 
