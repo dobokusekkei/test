@@ -1,7 +1,7 @@
-/**
- * structure_viz.js
- * グラフ描画・断面描画コンポーネント
- */
+// structure_viz.js
+// グラフ描画・断面描画コンポーネント
+// Note: This file contains JSX and is loaded via custom loader in index.html
+
 import React, { useState, useEffect, useRef } from 'react';
 import { COLORS } from './structure_engine.js';
 
