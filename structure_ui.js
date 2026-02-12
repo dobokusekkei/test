@@ -1,7 +1,7 @@
-/**
- * structure_ui.js
- * モーダル、レポート、共通UIコンポーネント
- */
+// structure_ui.js
+// モーダル、レポート、共通UIコンポーネント
+// Note: This file contains JSX and is loaded via custom loader in index.html
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Trash2, Activity, Settings, List, X, Layers, ChevronDown, ArrowRight, RotateCw, AlertTriangle, Save, FolderOpen, Printer, Edit3, HelpCircle, History, FileDown, Upload, ExternalLink } from 'lucide-react';
