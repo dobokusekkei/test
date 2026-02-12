@@ -1,66 +1,159 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>構造計算アプリケーション v21.30</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      body { font-family: 'Helvetica Neue', Arial, sans-serif; }
-      @media print {
-          .no-print { display: none !important; }
-          body { padding: 0; background: white; }
-          .container { width: 100%; max-width: none; box-shadow: none; padding: 0; }
-      }
-      /* 数式用スタイル */
-      .math-display { 
-          font-family: 'Times New Roman', Times, serif; 
-          font-style: italic; 
-          text-align: center;
-          background-color: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 0.5rem;
-          padding: 1rem;
-          margin: 1rem 0;
-          overflow-x: auto;
-          font-size: 1.1em;
-          line-height: 2;
-      }
-      .math-inline {
-          font-family: 'Times New Roman', Times, serif; 
-          font-style: italic;
-          padding: 0 0.1em;
-      }
-      .fraction { 
-          display: inline-flex; 
-          flex-direction: column; 
-          align-items: center; 
-          vertical-align: middle; 
-          margin: 0 0.3em; 
-          font-size: 0.9em;
-      }
-      .fraction > span:first-child { 
-          border-bottom: 1px solid #334155; 
-          padding: 0.1em 0.2em; 
-          display: block;
-          width: 100%;
-          text-align: center;
-      }
-      .fraction > span:last-child { 
-          padding-top: 0.1em; 
-          display: block;
-          width: 100%;
-          text-align: center;
-      }
-      .sub { font-size: 0.7em; vertical-align: sub; margin-left: 0.05em; font-style: normal; }
-      .sup { font-size: 0.7em; vertical-align: super; margin-left: 0.05em; font-style: normal; }
-      .op { margin: 0 0.3em; font-style: normal; }
-      .func { font-style: normal; margin-right: 0.2em; }
-      .integral { font-size: 1.5em; vertical-align: middle; margin-right: 0.1em; font-style: normal; }
-    </style>
-  </head>
-  <body class="bg-slate-50 text-slate-800">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+{
+  "steel_db": {
+    "H-100x100x6x8": { "Ix": 378, "Iy": 134, "Zx": 75.6, "Zy": 26.7, "A": 21.59, "w": 16.9 },
+    "H-125x60x6x8": { "Ix": 413, "Iy": 29.2, "Zx": 66.1, "Zy": 9.73, "A": 16.84, "w": 13.2 },
+    "H-125x125x6.5x9": { "Ix": 847, "Iy": 293, "Zx": 136, "Zy": 47.0, "A": 30.00, "w": 23.6 },
+    "H-148x100x6x9": { "Ix": 711, "Iy": 122, "Zx": 96.2, "Zy": 24.4, "A": 26.84, "w": 21.1 },
+    "H-150x75x5x7": { "Ix": 666, "Iy": 49.5, "Zx": 88.8, "Zy": 13.2, "A": 17.85, "w": 14.0 },
+    "H-150x150x7x10": { "Ix": 1640, "Iy": 563, "Zx": 219, "Zy": 75.1, "A": 39.65, "w": 31.1 },
+    "H-175x90x5x8": { "Ix": 1210, "Iy": 89.6, "Zx": 138, "Zy": 19.9, "A": 23.04, "w": 18.1 },
+    "H-175x175x7.5x11": { "Ix": 2900, "Iy": 984, "Zx": 331, "Zy": 112, "A": 51.21, "w": 40.2 },
+    "H-194x150x6x9": { "Ix": 2690, "Iy": 507, "Zx": 277, "Zy": 67.6, "A": 38.11, "w": 29.9 },
+    "H-200x100x5.5x8": { "Ix": 1840, "Iy": 134, "Zx": 184, "Zy": 26.8, "A": 27.16, "w": 21.3 },
+    "H-200x200x8x12": { "Ix": 4720, "Iy": 1600, "Zx": 472, "Zy": 160, "A": 63.53, "w": 49.9 },
+    "H-244x175x7x11": { "Ix": 6120, "Iy": 984, "Zx": 502, "Zy": 113, "A": 55.49, "w": 43.6 },
+    "H-250x125x6x9": { "Ix": 4050, "Iy": 294, "Zx": 324, "Zy": 47.0, "A": 37.66, "w": 29.6 },
+    "H-250x250x9x14": { "Ix": 10800, "Iy": 3650, "Zx": 867, "Zy": 292, "A": 91.43, "w": 71.8 },
+    "H-294x200x8x12": { "Ix": 11300, "Iy": 1600, "Zx": 771, "Zy": 160, "A": 72.38, "w": 56.8 },
+    "H-300x150x6.5x9": { "Ix": 7210, "Iy": 488, "Zx": 481, "Zy": 65.1, "A": 46.78, "w": 36.7 },
+    "H-300x300x10x15": { "Ix": 20200, "Iy": 6750, "Zx": 1350, "Zy": 450, "A": 118.4, "w": 93.0 },
+    "H-340x250x9x14": { "Ix": 15300, "Iy": 3650, "Zx": 903, "Zy": 292, "A": 101.5, "w": 79.7 },
+    "H-350x175x7x11": { "Ix": 13600, "Iy": 984, "Zx": 775, "Zy": 112, "A": 62.91, "w": 49.4 },
+    "H-350x350x12x19": { "Ix": 39800, "Iy": 13600, "Zx": 2280, "Zy": 776, "A": 171.9, "w": 135 },
+    "H-390x300x10x16": { "Ix": 38700, "Iy": 7210, "Zx": 1980, "Zy": 481, "A": 133.2, "w": 105 },
+    "H-400x200x8x13": { "Ix": 23700, "Iy": 1740, "Zx": 1190, "Zy": 174, "A": 83.37, "w": 65.4 },
+    "H-400x400x13x21": { "Ix": 66600, "Iy": 22400, "Zx": 3330, "Zy": 1120, "A": 218.7, "w": 172 },
+    "H-440x300x11x18": { "Ix": 56100, "Iy": 8110, "Zx": 2550, "Zy": 541, "A": 157.4, "w": 124 },
+    "H-450x200x9x14": { "Ix": 33500, "Iy": 1870, "Zx": 1490, "Zy": 187, "A": 96.76, "w": 76.0 },
+    "H-496x199x9x14": { "Ix": 41900, "Iy": 1840, "Zx": 1690, "Zy": 185, "A": 101.3, "w": 79.5 },
+    "H-500x200x10x16": { "Ix": 47800, "Iy": 2140, "Zx": 1910, "Zy": 214, "A": 114.2, "w": 89.6 },
+    "H-588x300x12x20": { "Ix": 118000, "Iy": 9020, "Zx": 4020, "Zy": 601, "A": 192.5, "w": 151 },
+    "H-600x200x11x17": { "Ix": 77600, "Iy": 2280, "Zx": 2590, "Zy": 228, "A": 134.4, "w": 106 },
+    "C-75x40x5x7": { "Ix": 75.3, "Iy": 12.2, "Zx": 20.1, "Zy": 4.47, "A": 8.818, "w": 6.92 },
+    "C-100x50x5x7.5": { "Ix": 188, "Iy": 26.0, "Zx": 37.6, "Zy": 7.52, "A": 11.92, "w": 9.36 },
+    "C-125x65x6x8": { "Ix": 424, "Iy": 61.8, "Zx": 67.8, "Zy": 13.4, "A": 17.11, "w": 13.4 },
+    "C-150x75x6.5x10": { "Ix": 861, "Iy": 117, "Zx": 115, "Zy": 21.2, "A": 23.71, "w": 18.6 },
+    "C-150x75x9x12.5": { "Ix": 1050, "Iy": 147, "Zx": 140, "Zy": 26.6, "A": 30.59, "w": 24.0 },
+    "C-180x75x7x10.5": { "Ix": 1380, "Iy": 131, "Zx": 153, "Zy": 23.6, "A": 27.20, "w": 21.4 },
+    "C-200x80x7.5x11": { "Ix": 1950, "Iy": 168, "Zx": 195, "Zy": 27.4, "A": 31.33, "w": 24.6 },
+    "C-200x90x8x13.5": { "Ix": 2490, "Iy": 277, "Zx": 249, "Zy": 42.1, "A": 38.65, "w": 30.3 },
+    "C-250x90x9x13": { "Ix": 4180, "Iy": 294, "Zx": 334, "Zy": 43.6, "A": 44.07, "w": 34.6 },
+    "C-300x90x9x13": { "Ix": 6440, "Iy": 309, "Zx": 429, "Zy": 45.7, "A": 48.57, "w": 38.1 },
+    "C-380x100x10.5x16": { "Ix": 14500, "Iy": 535, "Zx": 763, "Zy": 67.6, "A": 69.39, "w": 54.5 },
+    "C-60x30x10x1.6": { "Ix": 10.6, "Iy": 2.37, "Zx": 3.54, "Zy": 1.12, "A": 2.155, "w": 1.69 },
+    "C-60x30x10x2.3": { "Ix": 14.6, "Iy": 3.20, "Zx": 4.88, "Zy": 1.54, "A": 3.018, "w": 2.37 },
+    "C-75x45x15x1.6": { "Ix": 27.0, "Iy": 7.82, "Zx": 7.19, "Zy": 2.50, "A": 2.955, "w": 2.32 },
+    "C-75x45x15x2.3": { "Ix": 37.6, "Iy": 10.8, "Zx": 10.0, "Zy": 3.51, "A": 4.168, "w": 3.27 },
+    "C-100x50x20x1.6": { "Ix": 58.7, "Iy": 16.7, "Zx": 11.7, "Zy": 4.41, "A": 3.675, "w": 2.88 },
+    "C-100x50x20x2.3": { "Ix": 82.2, "Iy": 23.2, "Zx": 16.4, "Zy": 6.25, "A": 5.203, "w": 4.08 },
+    "C-100x50x20x3.2": { "Ix": 109, "Iy": 30.1, "Zx": 21.8, "Zy": 8.37, "A": 7.077, "w": 5.56 },
+    "C-125x50x20x2.3": { "Ix": 133, "Iy": 26.2, "Zx": 21.3, "Zy": 6.81, "A": 5.778, "w": 4.54 },
+    "C-125x50x20x3.2": { "Ix": 178, "Iy": 34.2, "Zx": 28.5, "Zy": 9.20, "A": 7.877, "w": 6.18 },
+    "C-150x75x20x3.2": { "Ix": 387, "Iy": 90.9, "Zx": 51.6, "Zy": 16.3, "A": 10.68, "w": 8.38 },
+    "L-30x30x3": { "Ix": 1.13, "Iy": 1.13, "Zx": 0.52, "Zy": 0.52, "A": 1.727, "w": 1.36 },
+    "L-40x40x3": { "Ix": 2.87, "Iy": 2.87, "Zx": 0.98, "Zy": 0.98, "A": 2.327, "w": 1.83 },
+    "L-40x40x5": { "Ix": 4.45, "Iy": 4.45, "Zx": 1.58, "Zy": 1.58, "A": 3.755, "w": 2.95 },
+    "L-50x50x4": { "Ix": 9.38, "Iy": 9.38, "Zx": 2.57, "Zy": 2.57, "A": 3.892, "w": 3.06 },
+    "L-50x50x6": { "Ix": 13.3, "Iy": 13.3, "Zx": 3.73, "Zy": 3.73, "A": 5.644, "w": 4.43 },
+    "L-60x60x5": { "Ix": 20.3, "Iy": 20.3, "Zx": 4.71, "Zy": 4.71, "A": 5.747, "w": 4.51 },
+    "L-65x65x6": { "Ix": 33.3, "Iy": 33.3, "Zx": 7.11, "Zy": 7.11, "A": 7.527, "w": 5.91 },
+    "L-75x75x6": { "Ix": 52.4, "Iy": 52.4, "Zx": 9.85, "Zy": 9.85, "A": 8.727, "w": 6.85 },
+    "L-75x75x9": { "Ix": 75.2, "Iy": 75.2, "Zx": 14.5, "Zy": 14.5, "A": 12.69, "w": 9.96 },
+    "L-90x90x7": { "Ix": 107, "Iy": 107, "Zx": 16.7, "Zy": 16.7, "A": 12.22, "w": 9.59 },
+    "L-90x90x10": { "Ix": 147, "Iy": 147, "Zx": 23.6, "Zy": 23.6, "A": 17.00, "w": 13.3 },
+    "L-100x100x7": { "Ix": 150, "Iy": 150, "Zx": 21.0, "Zy": 21.0, "A": 13.62, "w": 10.7 },
+    "L-100x100x10": { "Ix": 207, "Iy": 207, "Zx": 29.5, "Zy": 29.5, "A": 19.00, "w": 14.9 },
+    "L-130x130x9": { "Ix": 395, "Iy": 395, "Zx": 42.9, "Zy": 42.9, "A": 22.74, "w": 17.9 },
+    "L-130x130x12": { "Ix": 516, "Iy": 516, "Zx": 57.0, "Zy": 57.0, "A": 29.76, "w": 23.4 },
+    "L-150x150x12": { "Ix": 804, "Iy": 804, "Zx": 75.7, "Zy": 75.7, "A": 34.77, "w": 27.3 },
+    "SP-II": { "Ix": 8740, "Zx": 874, "Iy": 0, "Zy": 0, "H": 100, "B": 400, "t": 10.5, "A": 152.9, "w": 120 },
+    "SP-III": { "Ix": 16800, "Zx": 1340, "Iy": 0, "Zy": 0, "H": 125, "B": 400, "t": 13.0, "A": 191.0, "w": 150 },
+    "SP-IV": { "Ix": 22700, "Zx": 2270, "Iy": 0, "Zy": 0, "H": 170, "B": 400, "t": 15.5, "A": 242.5, "w": 190 },
+    "SP-VL": { "Ix": 31500, "Zx": 3150, "Iy": 0, "Zy": 0, "H": 200, "B": 500, "t": 24.3, "A": 267.5, "w": 210 },
+    "SP-VIL": { "Ix": 38600, "Zx": 3820, "Iy": 0, "Zy": 0, "H": 225, "B": 500, "t": 27.6, "A": 306.0, "w": 240 },
+    "SP-IIw": { "Ix": 13000, "Zx": 1000, "Iy": 0, "Zy": 0, "H": 130, "B": 600, "t": 10.3, "A": 131.2, "w": 103 },
+    "SP-IIIw": { "Ix": 22400, "Zx": 1360, "Iy": 0, "Zy": 0, "H": 180, "B": 600, "t": 13.4, "A": 173.3, "w": 136 },
+    "SP-IVw": { "Ix": 32400, "Zx": 2160, "Iy": 0, "Zy": 0, "H": 225, "B": 600, "t": 18.0, "A": 202.5, "w": 159 },
+    "SP-10H": { "Ix": 10800, "Zx": 902, "Iy": 0, "Zy": 0, "H": 230, "B": 900, "t": 10.8, "A": 122.2, "w": 95.9 },
+    "SP-25H": { "Ix": 24400, "Zx": 1610, "Iy": 0, "Zy": 0, "H": 300, "B": 900, "t": 13.2, "A": 169.6, "w": 133 },
+    "LSP-1": { "Ix": 382, "Zx": 147, "Iy": 0, "Zy": 0, "H": 35, "B": 200, "t": 3.2, "A": 61.2, "w": 48.0 },
+    "LSP-2": { "Ix": 644, "Zx": 208, "Iy": 0, "Zy": 0, "H": 40, "B": 250, "t": 4.0, "A": 77.4, "w": 60.8 },
+    "Square-50x50x2.3": { "Ix": 16.3, "Iy": 16.3, "Zx": 6.54, "Zy": 6.54, "A": 4.321, "w": 3.39 },
+    "Square-60x60x2.3": { "Ix": 28.8, "Iy": 28.8, "Zx": 9.61, "Zy": 9.61, "A": 5.241, "w": 4.11 },
+    "Square-75x75x3.2": { "Ix": 78.2, "Iy": 78.2, "Zx": 20.8, "Zy": 20.8, "A": 9.043, "w": 7.10 },
+    "Square-100x100x3.2": { "Ix": 192, "Iy": 192, "Zx": 38.3, "Zy": 38.3, "A": 12.24, "w": 9.61 },
+    "Square-100x100x4.5": { "Ix": 259, "Iy": 259, "Zx": 51.8, "Zy": 51.8, "A": 16.85, "w": 13.2 },
+    "Square-125x125x4.5": { "Ix": 518, "Iy": 518, "Zx": 82.9, "Zy": 82.9, "A": 21.35, "w": 16.8 },
+    "Square-150x150x6.0": { "Ix": 1270, "Iy": 1270, "Zx": 170, "Zy": 170, "A": 34.02, "w": 26.7 },
+    "Square-200x200x6.0": { "Ix": 3080, "Iy": 3080, "Zx": 308, "Zy": 308, "A": 46.02, "w": 36.1 },
+    "Square-250x250x9.0": { "Ix": 8870, "Iy": 8870, "Zx": 710, "Zy": 710, "A": 85.64, "w": 67.2 },
+    "Square-300x300x12.0": { "Ix": 20100, "Iy": 20100, "Zx": 1340, "Zy": 1340, "A": 135.5, "w": 106 }
+  },
+  "concrete_strengths": [
+    { "label": "Fc18", "Fc": 18, "Ec": 20500 }, { "label": "Fc21", "Fc": 21, "Ec": 21800 },
+    { "label": "Fc24", "Fc": 24, "Ec": 22700 }, { "label": "Fc27", "Fc": 27, "Ec": 23500 },
+    { "label": "Fc30", "Fc": 30, "Ec": 24300 }, { "label": "Fc36", "Fc": 36, "Ec": 25000 },
+    { "label": "Fc40", "Fc": 40, "Ec": 26500 }, { "label": "Fc42", "Fc": 42, "Ec": 27000 },
+    { "label": "Fc45", "Fc": 45, "Ec": 28000 }, { "label": "Fc50", "Fc": 50, "Ec": 30000 }
+  ],
+  "history": [
+    { "ver": "v21.30", "date": "2026/02/08", "desc": "別ウィンドウで結果を表示可能にした。" },
+    { "ver": "v21.29", "date": "2026/02/08", "desc": "CSV出力を印刷レポート準拠の詳細形式に改修（スパンごとの最大最小、ローカル座標での詳細結果）。CSV読込時に引用符内のカンマを区切り文字として扱わないパーサーを実装し、入力データの復元精度を向上。" },
+    { "ver": "v21.28", "date": "2026/02/08", "desc": "CSV出力機能を強化。結果詳細（全着目点）を出力し、材料入力データは選択中のタイプのみ出力するように変更。" },
+    { "ver": "v21.27", "date": "2026/02/08", "desc": "入力データ保存機能を廃止し、結果CSV出力機能（入力データ含む）を実装。CSV読込による入力データ復元機能を追加。" },
+    { "ver": "v21.26", "date": "2026/02/08", "desc": "荷重表等の支点表示において、各スパンごとの値を厳密に分離して表示するように修正。" },
+    { "ver": "v21.25", "date": "2026/02/08", "desc": "ラベル配置ロジックからX方向移動（左右振り分け）を廃止。" },
+    { "ver": "v21.24", "date": "2026/02/08", "desc": "ラベル配置ロジックの定数を最終調整。左右振り分け処理を追加。" },
+    { "ver": "v21.23", "date": "2026/02/08", "desc": "ラベル配置をグラフ線へ接近(10-12px)させ、衝突判定を厳密化(14px)。" },
+    { "ver": "v21.22", "date": "2026/02/08", "desc": "ラベル重なり回避ロジックを刷新（方向自動判定＋厳密重複回避）。" },
+    { "ver": "v21.21", "date": "2026/02/08", "desc": "ラベル重なり回避ロジックを「X座標順次確定（貪欲法）」に刷新。" },
+    { "ver": "v21.20", "date": "2026/02/08", "desc": "ラベル重なり回避ロジックを「事前計算方式」に刷新。" },
+    { "ver": "v21.19", "date": "2026/02/08", "desc": "グラフ描画レイアウト調整（全体シフト）、ラベル重なり回避ロジックの強化。" },
+    { "ver": "v21.18", "date": "2026/02/08", "desc": "固定端(Fixed)に作用する集中モーメント荷重を計算対象から除外(スキップ)する処理を追加。" },
+    { "ver": "v21.17", "date": "2026/02/05", "desc": "右端単純支持における集中モーメント荷重の計算結果表示を補正。バージョン履歴機能を追加。" },
+    { "ver": "v21.16", "date": "2026/02/04", "desc": "着目点入力の改善(PoiInput)、グラフ描画の重複回避(レイアウト拡大)、不連続点処理の強化。" },
+    { "ver": "v21.15", "date": "2026/01/29", "desc": "任意断面入力モードの実装、モーメント荷重への対応、断面プロファイル表示の拡充。" },
+    { "ver": "v21.00", "date": "2025/12/01", "desc": "UIデザインの刷新、印刷レポート機能の強化、保存/読込機能の実装。" }
+  ],
+  "manual": [
+    {
+      "title": "1. はじめに",
+      "content": "本アプリケーションは、単純梁や連続梁などの構造計算（断面力・たわみ）をブラウザ上で手軽に行えるツールです。鋼材やRC断面のデータベースを内蔵し、即座に計算結果をグラフで可視化します。"
+    },
+    {
+      "title": "2. 基本操作",
+      "type": "list",
+      "items": [
+        "<strong>断面設定:</strong> 左側のパネルで「S造」「RC造」「任意」から選択し、形状や寸法を指定します。",
+        "<strong>モデル設定:</strong> 梁タイプ（単純梁、連続梁など）を選択し、スパン長を入力します。複数スパンはカンマ区切り（例: <code>5.0, 5.0</code>）で入力可能です。",
+        "<strong>荷重入力:</strong> 「集中」「等分布」「台形」「モーメント」から種類を選び、大きさ・位置を入力して「追加」ボタンを押します。"
+      ],
+      "extraHtml": "<div class='mt-2 p-3 bg-slate-50 border rounded text-xs text-slate-600'><strong>RC断面の算出式（矩形）:</strong><br/>幅 <span class='math-inline'>b</span>, 高さ <span class='math-inline'>D</span> の場合<div class='math-display text-base py-2'><span class='math-inline'>I</span> <span class='op'>=</span><div class='fraction'><span><span class='math-inline'>b</span><span class='math-inline'>D</span><span class='sup'>3</span></span><span>12</span></div><span class='op'>,</span>&nbsp;&nbsp;<span class='math-inline'>Z</span> <span class='op'>=</span><div class='fraction'><span><span class='math-inline'>b</span><span class='math-inline'>D</span><span class='sup'>2</span></span><span>6</span></div></div></div>"
+    },
+    {
+      "title": "3. 荷重の種類について",
+      "type": "grid",
+      "items": [
+        { "label": "集中荷重 (Point)", "desc": "1点に作用する荷重です。下向きが正(+)です。" },
+        { "label": "分布荷重 (Distributed)", "desc": "一定区間に等分布で作用します。" },
+        { "label": "台形荷重 (Trapezoid)", "desc": "始点と終点で大きさが異なる分布荷重です。三角形状も可能です。" },
+        { "label": "モーメント荷重 (Moment)", "desc": "特定の点に回転モーメントを与えます。時計回りが正(+)です。" }
+      ]
+    },
+    {
+      "title": "4. 機能・Tips",
+      "type": "list",
+      "items": [
+        "<strong>印刷機能:</strong> 右上の「印刷」ボタンから、計算書形式のレイアウトで印刷・PDF保存が可能です。",
+        "<strong>データ保存(CSV出力):</strong> 計算結果および入力データをCSVファイルとして出力・保存できます。",
+        "<strong>読込:</strong> 出力されたCSVファイルを読み込んで、計算条件を復元できます。",
+        "<strong>着目点:</strong> グラフ下の表では、最大値発生位置などが自動計算されます。「追加」ボタンで任意の位置の結果を確認することも可能です。"
+      ]
+    },
+    {
+      "title": "5. 計算ロジック詳細（技術資料）",
+      "type": "custom",
+      "htmlContent": "<div class='space-y-4'><div><h4 class='font-bold text-slate-800 mb-2'>5.1 解析手法</h4><p>本アプリケーションでは、変位法（たわみ角法）に基づくマトリクス解析を行っています。各スパンを要素とし、節点（支点）における回転角とモーメントの釣り合い条件から連立方程式を構築し、節点モーメントを算出しています。</p></div><div><h4 class='font-bold text-slate-800 mb-2'>5.2 支配方程式（3連モーメントの定理の一般化）</h4><p>連続梁の任意の中間支点 <span class='math-inline'>n</span> における釣り合い条件は、以下の式で表されます。</p><div class='math-display'><span class='math-inline'>M</span><span class='sub'>n</span><span class='math-inline'>L</span><span class='sub'>n</span><span class='op'>+</span>2<span class='math-inline'>M</span><span class='sub'>n+1</span>(<span class='math-inline'>L</span><span class='sub'>n</span> <span class='op'>+</span> <span class='math-inline'>L</span><span class='sub'>n+1</span>)<span class='op'>+</span><span class='math-inline'>M</span><span class='sub'>n+2</span><span class='math-inline'>L</span><span class='sub'>n+1</span><span class='op'>=</span><span class='op'>-</span>6(<span class='math-inline'>&Phi;</span><span class='sub'>R,n</span> <span class='op'>+</span> <span class='math-inline'>&Phi;</span><span class='sub'>L,n+1</span>)</div><p class='text-xs text-slate-500 mt-1'>ここで、<span class='math-inline'>M</span> は節点モーメント、<span class='math-inline'>L</span> はスパン長、<span class='math-inline'>&Phi;</span> は単純梁として計算した際の支点におけるたわみ角（荷重項）を表します。</p></div><div><h4 class='font-bold text-slate-800 mb-2'>5.3 断面力および変位の算定</h4><p>算出された節点モーメント <span class='math-inline'>M</span><span class='sub'>L</span>, <span class='math-inline'>M</span><span class='sub'>R</span> を境界条件とし、各スパンごとの単純梁としての断面力（<span class='math-inline'>Q</span><span class='sub'>0</span>, <span class='math-inline'>M</span><span class='sub'>0</span>）に重ね合わせることで、任意位置 <span class='math-inline'>x</span> における最終的な値を求めています。</p><div class='math-display'><div class='mb-4'><span class='func'>M</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='math-inline'>M</span><span class='sub'>0</span>(<span class='math-inline'>x</span>) <span class='op'>+</span> <span class='math-inline'>M</span><span class='sub'>L</span> <span class='op'>+</span> <div class='fraction'><span><span class='math-inline'>x</span></span><span><span class='math-inline'>L</span></span></div>(<span class='math-inline'>M</span><span class='sub'>R</span> <span class='op'>-</span> <span class='math-inline'>M</span><span class='sub'>L</span>)</div><div><span class='func'>Q</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='math-inline'>Q</span><span class='sub'>0</span>(<span class='math-inline'>x</span>) <span class='op'>+</span> <div class='fraction'><span><span class='math-inline'>M</span><span class='sub'>R</span> <span class='op'>-</span> <span class='math-inline'>M</span><span class='sub'>L</span></span><span><span class='math-inline'>L</span></span></div></div></div><p class='mt-4 mb-2'><span class='font-bold text-slate-700'>支点反力 (Reactions):</span><br/>支点位置 <span class='math-inline'>i</span> における反力 <span class='math-inline'>R</span><span class='sub'>i</span> は、その支点を挟む左右のせん断力の差として算出されます。</p><div class='math-display'><span class='math-inline'>R</span><span class='sub'>i</span> <span class='op'>=</span> <span class='func'>Q</span>(<span class='math-inline'>x</span><span class='sub'>i</span><span class='op'>+</span>0) <span class='op'>-</span> <span class='func'>Q</span>(<span class='math-inline'>x</span><span class='sub'>i</span><span class='op'>-</span>0)</div><p class='mt-4 mb-2'><span class='font-bold text-slate-700'>たわみ (Deflection):</span><br/>たわみ曲線微分方程式を二重積分することで算出しています。</p><div class='math-display'><div class='mb-4'><div class='fraction'><span><span class='math-inline'>d</span><span class='sup'>2</span><span class='math-inline'>v</span></span><span><span class='math-inline'>dx</span><span class='sup'>2</span></span></div><span class='op'>=</span> <span class='op'>-</span><div class='fraction'><span><span class='func'>M</span>(<span class='math-inline'>x</span>)</span><span><span class='math-inline'>E</span><span class='math-inline'>I</span></span></div></div><div><span class='func'>v</span>(<span class='math-inline'>x</span>) <span class='op'>=</span> <span class='integral'>&int;&int;</span><span class='op'>-</span><div class='fraction'><span><span class='func'>M</span>(<span class='math-inline'>x</span>)</span><span><span class='math-inline'>E</span><span class='math-inline'>I</span></span></div><span class='math-inline'>dx</span><span class='sup'>2</span><span class='op'>+</span> <span class='math-inline'>C</span><span class='sub'>1</span><span class='math-inline'>x</span> <span class='op'>+</span> <span class='math-inline'>C</span><span class='sub'>2</span></div></div></div></div>"
+    }
+  ]
+}
