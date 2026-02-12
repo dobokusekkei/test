@@ -1,7 +1,5 @@
-/**
- * structure_engine.js
- * 構造計算ロジック、データベース、定数定義
- */
+// structure_engine.js
+// 構造計算ロジック、データベース、定数定義
 
 // --- 定数 ---
 export const INITIAL_SPAN = "6.0";
