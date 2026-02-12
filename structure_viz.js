@@ -7,7 +7,7 @@ import { COLORS } from './structure_engine.js';
 
 // --- Visual Components ---
 export function SectionProfileView({ props }) {
-  const { shape, dims, axis, matType, isManualMode } = props;
+  const { shape, dims, axis, matType } = props;
   const size = 100, scale = 0.8;
   const cx = size / 2, cy = size / 2;
   let pathD = "";
@@ -17,7 +17,12 @@ export function SectionProfileView({ props }) {
       const H=s(200), B=s(100), t1=s(6), t2=s(8);
       pathD = `M ${cx-B/2} ${cy-H/2} h ${B} v ${t2} h ${-(B-t1)/2} v ${H-2*t2} h ${(B-t1)/2} v ${t2} h ${-B} v ${-t2} h ${(B-t1)/2} v ${-(H-2*t2)} h ${-(B-t1)/2} z`;
       function s(v) { return (v / 200) * size * scale; } // Local s for manual
-      return <svg width="100%" height="100%" viewBox="0 0 100 100"><path d={pathD} fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="3" /><text x={50} y={50} textAnchor="middle" fontSize="10" fill="#64748b" dominantBaseline="middle">Manual</text></svg>;
+      return (
+        <svg width="100%" height="100%" viewBox="0 0 100 100">
+            <path d={pathD} fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="3" />
+            <text x={50} y={50} textAnchor="middle" fontSize="10" fill="#64748b" dominantBaseline="middle">Manual</text>
+        </svg>
+      );
   }
 
   if (!dims.H) return null;
